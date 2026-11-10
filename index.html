@@ -287,9 +287,42 @@ h1{ margin:4px 0 6px; font-family:'Comfortaa','Nunito',sans-serif; font-size:cla
 .rt{ font-size:1.05rem; margin-top:2px; }
 @media (min-width:760px){
   .arena.side{ grid-template-columns:1fr 1fr; grid-template-areas:'bar bar' 'p0 p1'; }
-  .arena.side .scorebar{ grid-area:bar; } .arena.side .pl0{ grid-area:p0; } .arena.side .pl1{ grid-area:p1; }
+  .arena.side .scorebar{ grid-area:bar; } .arena.side .plbox0{ grid-area:p0; } .arena.side .plbox1{ grid-area:p1; }
 }
-.arena.face .pl0{ transform:rotate(180deg); }
+.arena.face .plbox0{ transform:rotate(180deg); }
+.plbox{ min-width:0; }
+.arena .pl{ transform-origin:0 0; width:calc(100% / var(--z, 1)); transform:scale(var(--z, 1)); }
+/* компактный бой: помещается на один экран */
+.induel .top{ padding:4px 10px; }
+.induel .top .row + .row{ display:none; }
+.induel .top.open2 .row + .row{ display:flex; }
+.induel #starCounter,.induel #streakChip{ display:none; }
+.induel #opts2Btn{ display:inline-flex !important; }
+.induel .chip{ min-height:36px; padding:4px 12px; font-size:.9rem; }
+.induel main{ padding:6px 10px 6px; }
+.induel .arena{ gap:6px; }
+.scorebar .chip{ min-height:32px; padding:2px 12px; font-size:.85rem; margin-left:8px; }
+.induel .scorebar{ padding:4px 12px; font-size:1.1rem; } .induel .scorebar b{ font-size:1.25rem; }
+.pl{ padding:8px; border-width:5px; border-radius:22px; }
+.pl .avemo{ font-size:2rem; } .pl .avimg,.pl .himg.av{ width:48px; height:48px; }
+.pl .tname{ font-size:1.1rem; } .pl .hearts{ font-size:1rem; } .pl .ammo{ font-size:.9rem; }
+.pts{ font-size:1.35rem; padding:2px 12px; }
+.pq{ font-size:.85rem; margin:2px 0 0; } .pprompt{ font-size:1.1rem; }
+.pl .sentence{ font-size:clamp(1.3rem,2.4vw,1.7rem); margin:4px 0 6px; }
+.pl .bigword{ font-size:clamp(1.5rem,3vw,2.1rem); margin:2px 0 4px; } .pl .bigword small{ font-size:.4em; }
+.pl .ask{ font-size:1rem; margin:2px 0; }
+.pl .opts{ gap:8px; margin-top:6px; } .pl .opt{ min-height:60px; padding:6px 10px; font-size:clamp(1.1rem,2.3vw,1.5rem); }
+.pfb{ min-height:1.7rem; margin-top:6px; padding:3px 10px; font-size:1.05rem; }
+.pl .sortbox .sortwrap .dcard{ font-size:clamp(1.05rem,2.2vw,1.45rem); padding:6px 8px; min-height:52px; }
+.pl .sortbox .sortwrap .pool{ position:relative; top:auto; padding:8px; gap:8px; }
+.pl .sortbox .sortwrap .pair{ grid-template-columns:minmax(130px,44%) 1fr; gap:8px; }
+.pl .plabel{ padding:5px 8px; gap:6px; } .pl .plabel .pa{ font-size:1.3rem; } .pl .plabel .pt{ font-size:.85rem; line-height:1.15; }
+.pl .pair .slot,.pl .slot{ min-height:48px; } .pl .slot .ph{ font-size:.9rem; }
+.pl .order .slot{ min-height:64px; } .pl .pairs{ gap:6px; } .pl .bin{ min-height:110px; } .pl .binhead{ font-size:1rem; padding:4px; }
+.pl .sortbox .sortwrap .order{ gap:8px; } .pl .num{ width:28px; height:28px; font-size:1rem; }
+.pl .panelbox{ padding:8px; gap:6px; } .pl .field{ font-size:.9rem; } .pl .in{ padding:6px 10px; font-size:1.1rem; }
+.pl .btn{ min-height:40px; padding:6px 16px; font-size:1rem; } .pl .chip{ min-height:30px; padding:2px 10px; font-size:.85rem; }
+.pl .o-bar{ margin-bottom:4px; padding:4px 8px; font-size:.95rem; }
 .duelwrap{ max-width:none; margin:0 auto; touch-action:pan-y; }
 main:has(.sortbox){ max-width:min(1500px,100%); }
 body:has(.duelwrap) main{ max-width:min(1900px,100%); }
@@ -327,6 +360,7 @@ html.has-bg main{ background:color-mix(in srgb,var(--card) 68%,transparent); bor
     <button class="chip" id="homeBtn" aria-label="Домой">🏠 Домой</button>
     <span class="chip stat stars" id="starCounter">⭐ Звёзды: <span id="starCount">0</span></span>
     <span class="chip fire" id="streakChip">🔥 Серия: <span id="streakCount">0</span></span>
+    <button class="chip" id="opts2Btn" data-nosound="1" aria-label="Звук и громкость" style="display:none">⚙️ Звук</button>
   </div>
   <div class="row">
     <button class="chip" id="soundBtn" data-nosound="1" aria-pressed="true">🔊 Звук</button>
@@ -795,7 +829,7 @@ function tick() {
   parts.forEach(p => { p.life++; p.vy += p.g; p.vx *= .995; p.x += p.vx; p.y += p.vy; p.r += p.vr; cx2.save(); cx2.translate(p.x, p.y); cx2.rotate(p.r); cx2.fillStyle = p.c; cx2.fillRect(-p.w / 2, -p.h / 2, p.w, p.h); cx2.restore(); });
   raf = parts.length ? requestAnimationFrame(tick) : 0; if (!raf) cx2.clearRect(0, 0, innerWidth, innerHeight);
 }
-function resetFx() { G.duel = false; clearTimers(); parts = []; if (raf) { cancelAnimationFrame(raf); raf = 0; } if (cx2) cx2.clearRect(0, 0, innerWidth, innerHeight); $('#toast').className = 'toast'; $('#banner').className = 'banner'; }
+function resetFx() { G.duel = false; document.body.classList.remove('induel'); clearTimers(); parts = []; if (raf) { cancelAnimationFrame(raf); raf = 0; } if (cx2) cx2.clearRect(0, 0, innerWidth, innerHeight); $('#toast').className = 'toast'; $('#banner').className = 'banner'; }
 
 
 /* ================= СВОИ КАРТИНКИ (оформление) ================= */
@@ -1071,7 +1105,7 @@ function renderSort(task, host, done, onWrong, ctl) {
       st = { x:e.clientX, y:e.clientY, moved:false }; el.style.transition = 'none';
     });
     el.addEventListener('pointermove', e => {
-      if (!st) return; const fl = host.closest('.arena.face .pl0') ? -1 : 1, dx = (e.clientX - st.x) * fl, dy = (e.clientY - st.y) * fl;
+      if (!st) return; const ar = host.closest('.arena'), zz = ar ? (parseFloat(ar.style.getPropertyValue('--z')) || 1) : 1, fl = (host.closest('.arena.face .pl0') ? -1 : 1) / zz, dx = (e.clientX - st.x) * fl, dy = (e.clientY - st.y) * fl;
       if (!st.moved && Math.hypot(dx, dy) > 8) { st.moved = true; el.classList.add('dragging'); el.classList.remove('sel'); sel = null; Snd.playDrag(); }
       if (st.moved) {
         el.style.transform = `translate(${dx}px,${dy}px) scale(1.06) rotate(${Math.max(-10, Math.min(10, dx * 0.03))}deg)`;
@@ -1335,17 +1369,42 @@ function duelPool() {
   return D.total > 0 ? arr.slice(0, D.total) : arr;
 }
 const duelOrder = pool => { const g = {}; pool.forEach(t => { const k = t._lv * 100 + t._st; (g[k] = g[k] || []).push(t); }); return Object.keys(g).map(Number).sort((x, y) => x - y).flatMap(k => shuffle(g[k])); };
-const panelHTML = i => `<div class="pl pl${i}" id="pl${i}">
+const panelHTML = i => `<div class="plbox plbox${i}"><div class="pl pl${i}" id="pl${i}">
   <div class="phead">${avHTML(i)}<div class="pinfo"><div class="tname">${esc(D.names[i])}</div><div class="hearts" id="hr${i}"></div><div class="ammo" id="am${i}"></div></div><div class="pts" id="pt${i}">⭐ 0</div></div>
-  <div class="pq" id="pq${i}"></div><div class="pbody" id="pb${i}"></div><div class="pfb" id="fb${i}"></div></div>`;
+  <div class="pq" id="pq${i}"></div><div class="pbody" id="pb${i}"></div><div class="pfb" id="fb${i}"></div></div></div>`;
 function duelStart() {
   resetFx(); G.duel = true; D.over = false; D.firstDone = -1; window.scrollTo(0, 0);
   const pool = duelPool();
   D.P = [0, 1].map(() => { const p = { qs:duelOrder(pool), qi:0, pts:0, streak:0, best:0, lives:D.maxLives, ammo:0, ok:0, bad:0, done:false, out:false, tq:0, ctl:{ locked:false, m:0 } }; p.ctl.start = () => { p.tq = performance.now(); }; return p; });
-  $('#screen').innerHTML = `<section class="duelwrap"><div class="arena ${D.layout}">${panelHTML(0)}<div class="scorebar" id="scorebar"></div>${panelHTML(1)}</div>
-    <button class="reset" data-act="dsetup">⚙️ Настройки / выйти из боя</button></section>`;
-  updateHud(0); updateHud(1); showQ(0); showQ(1);
+  document.body.classList.add('induel'); $('.top').classList.remove('open2');
+  $('#screen').innerHTML = `<section class="duelwrap"><div class="arena ${D.layout}">${panelHTML(0)}<div class="scorebar" id="scorebar"></div>${panelHTML(1)}</div></section>`;
+  updateHud(0); updateHud(1); showQ(0); showQ(1); watchFit();
 }
+/* подгонка боя под экран: обе панели масштабируются так, чтобы всё помещалось без прокрутки */
+let fitTimer = 0, fitObs = null;
+function fitDuel() {
+  const ar = document.querySelector('.arena'); if (!ar || !G.duel) return;
+  const boxes = [...ar.querySelectorAll('.plbox')]; if (!boxes.length) return;
+  const top = document.querySelector('.top').offsetHeight, sb = ar.querySelector('.scorebar');
+  const cols = (getComputedStyle(ar).gridTemplateColumns || '').split(' ').filter(Boolean).length, stacked = cols < 2;
+  const all = window.innerHeight - top - (sb ? sb.offsetHeight : 0) - 24, avail = stacked ? all / 2 - 6 : all, minZ = 0.45;
+  let z = 1;
+  for (let it = 0; it < 6; it++) {
+    ar.style.setProperty('--z', z.toFixed(3));
+    const h = Math.max(...boxes.map(b => b.firstElementChild.offsetHeight)) * z;
+    if (!h || h <= avail || z <= minZ) break;
+    z = Math.max(minZ, z * avail / h * 0.985);
+  }
+  boxes.forEach(b => { b.style.height = (b.firstElementChild.offsetHeight * z) + 'px'; });
+}
+const scheduleFit = () => { clearTimeout(fitTimer); fitTimer = setTimeout(fitDuel, 50); };
+function watchFit() {
+  if (fitObs) fitObs.disconnect(); const ar = document.querySelector('.arena');
+  if (ar && window.MutationObserver) { fitObs = new MutationObserver(scheduleFit); fitObs.observe(ar, { childList:true, subtree:true, characterData:true }); }
+  scheduleFit(); if (document.fonts && document.fonts.ready) document.fonts.ready.then(scheduleFit);
+}
+window.addEventListener('resize', () => { if (G.duel) scheduleFit(); });
+$('#opts2Btn').addEventListener('click', () => { $('.top').classList.toggle('open2'); });
 function updateHud(i) {
   const p = D.P[i]; $('#hr' + i).textContent = heartsStr(i, p);
   $('#am' + i).textContent = `${'⚪'.repeat(Math.min(p.ammo, 5))}${p.ammo > 5 ? '+' : ''} снежков: ${p.ammo}`;
@@ -1353,7 +1412,7 @@ function updateHud(i) {
   const cu = p.qs[Math.min(p.qi, p.qs.length - 1)];
   $('#pq' + i).textContent = p.done ? 'Все задания пройдены' : cu._lv === 7 ? `🧩 Склонение своих слов · слово ${p.qi + 1} из ${p.qs.length}` : `Ур. ${cu._lv} · этап ${cu._st + 1}: ${cu._sn} · задание ${p.qi + 1} из ${p.qs.length}`;
   const [a, b] = D.P, lead = a.pts === b.pts ? -1 : a.pts > b.pts ? 0 : 1;
-  $('#scorebar').innerHTML = `<span class="sb ${lead === 0 ? 'lead' : ''}">${lead === 0 ? '🥇 ' : ''}${esc(D.names[0])} <b>${a.pts}</b></span><span class="sbv">:</span><span class="sb ${lead === 1 ? 'lead' : ''}"><b>${b.pts}</b> ${esc(D.names[1])}${lead === 1 ? ' 🥇' : ''}</span>`;
+  $('#scorebar').innerHTML = `<span class="sb ${lead === 0 ? 'lead' : ''}">${lead === 0 ? '🥇 ' : ''}${esc(D.names[0])} <b>${a.pts}</b></span><span class="sbv">:</span><span class="sb ${lead === 1 ? 'lead' : ''}"><b>${b.pts}</b> ${esc(D.names[1])}${lead === 1 ? ' 🥇' : ''}</span><button class="chip" data-act="dsetup">⚙️ Выйти</button>`;
 }
 function fb(i, text, kind) { const e = $('#fb' + i); if (!e) return; e.className = 'pfb ' + (kind || ''); e.textContent = text; e.classList.remove('flash'); void e.offsetWidth; e.classList.add('flash'); }
 function showQ(i) {

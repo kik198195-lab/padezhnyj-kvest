@@ -1,0 +1,1513 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>ПАДЕЖНЫЙ КВЕСТ</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;800;900&family=Comfortaa:wght@700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#d9f0ff; --bg2:#bfe3fa; --ink:#0a2447; --muted:#27497a; --card:#ffffff; --edge:#8fbbe3;
+  --good:#6eeab4; --bad:#ffcfdc; --warn:#ffe27a; --accent:#3aa0ff; --on:#0a2447;
+  --l1:#8cc8ff; --l2:#7fe3c4; --l3:#ffe27a; --l4:#ffb877; --l5:#ff9fb4; --l6:#c3a8ff; --l7:#8fe3ff;
+  --shadow:0 12px 26px rgba(20,70,130,.18);
+  color-scheme:light; box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+html{ scroll-padding-top:env(safe-area-inset-top,0px); height:100%; }
+*,*::before,*::after{ box-sizing:border-box; }
+body{
+  margin:0; min-height:100%; color:var(--ink); font-family:'Nunito','Trebuchet MS',system-ui,sans-serif; font-weight:800; line-height:1.35;
+  background:linear-gradient(180deg,var(--bg2) 0%,var(--bg) 45%,#f2fbff 100%); background-attachment:fixed; -webkit-tap-highlight-color:transparent;
+}
+button{ font:inherit; color:inherit; cursor:pointer; border:0; }
+input{ font:inherit; color:inherit; }
+:focus-visible{ outline:4px solid #ff8a3d; outline-offset:2px; }
+.snow{ position:fixed; inset:0; pointer-events:none; z-index:1; overflow:hidden; }
+.snow i{ position:absolute; top:-6vh; font-style:normal; color:#fff; text-shadow:0 0 8px rgba(120,190,255,.9); animation:fall linear infinite; opacity:.85; }
+@keyframes fall{ to{ transform:translate3d(var(--dx,30px),108vh,0) rotate(360deg); } }
+.top,main,.toast,.banner{ position:relative; z-index:2; }
+
+/* верхняя панель */
+.top{ position:sticky; top:env(safe-area-inset-top,0px); z-index:20; padding:8px 12px 10px; background:linear-gradient(180deg,rgba(255,255,255,.96),rgba(214,238,255,.94)); backdrop-filter:blur(6px); box-shadow:0 6px 18px rgba(20,70,130,.2); border-bottom:3px solid #fff; }
+.top .row{ display:flex; align-items:center; gap:8px; max-width:960px; margin:0 auto; flex-wrap:wrap; }
+.top .row + .row{ margin-top:8px; }
+.chip{ display:inline-flex; align-items:center; gap:6px; padding:8px 16px; min-height:44px; background:#fff; color:var(--on); border-radius:999px; box-shadow:0 4px 0 var(--edge); font-weight:900; font-size:1rem; white-space:nowrap; }
+.chip:active{ transform:translateY(3px); box-shadow:0 1px 0 var(--edge); }
+.chip.off{ opacity:.6; }
+.chip.stat{ cursor:default; background:var(--warn); }
+.chip.fire{ background:#ffd9c7; cursor:default; }
+.stars.pop{ animation:starpop .45s ease; }
+@keyframes starpop{ 50%{ transform:scale(1.25) rotate(-4deg); } }
+.panel{ max-width:960px; margin:10px auto 0; padding:10px 14px; background:var(--card); border-radius:18px; display:grid; gap:6px; box-shadow:var(--shadow); }
+.panel[hidden]{ display:none; }
+.vol{ display:flex; align-items:center; gap:10px; font-size:1rem; font-weight:900; }
+.vol span.l{ min-width:130px; }
+.vol output{ min-width:3.4ch; text-align:right; }
+input[type=range]{ flex:1; min-width:80px; accent-color:var(--accent); height:30px; }
+main{ max-width:960px; margin:0 auto; padding:16px 14px 56px; }
+h1{ margin:4px 0 6px; font-family:'Comfortaa','Nunito',sans-serif; font-size:clamp(1.9rem,5.4vw,3rem); line-height:1.08; font-weight:700; }
+.sub{ margin:0 0 6px; color:var(--muted); font-weight:800; font-size:clamp(1.05rem,2.6vw,1.3rem); }
+.lead{ margin:0 0 14px; color:var(--muted); font-weight:800; max-width:60ch; }
+
+/* карта */
+.hero{ text-align:center; padding:6px 0 8px; }
+.heroes{ display:flex; align-items:center; justify-content:center; gap:10px; }
+.heroes h1{ font-size:clamp(2.2rem,7vw,3.6rem); letter-spacing:.03em; margin:0; color:#0d4aa6; text-shadow:0 3px 0 #fff, 0 0 22px rgba(90,170,255,.8); }
+.hchar{ font-size:clamp(2.6rem,10vw,4.6rem); animation:bob 3s ease-in-out infinite; filter:drop-shadow(0 6px 8px rgba(20,70,130,.3)); }
+.hchar.b{ animation-delay:-1.5s; }
+@keyframes bob{ 50%{ transform:translateY(-10px) rotate(4deg); } }
+.progress{ display:flex; align-items:center; gap:10px; max-width:460px; margin:10px auto 18px; font-size:.95rem; color:var(--ink); font-weight:900; }
+.pbar{ flex:1; height:18px; background:#fff; border-radius:999px; overflow:hidden; box-shadow:inset 0 2px 5px rgba(20,70,130,.3); }
+.pbar i{ display:block; height:100%; background:linear-gradient(90deg,#6ed0ff,#b9a6ff); border-radius:999px; transition:width .6s; }
+.islands{ display:grid; grid-template-columns:repeat(2,1fr); gap:18px; }
+@media (min-width:700px){ .islands{ grid-template-columns:repeat(3,1fr); gap:22px; } }
+.island{ --c:var(--l1); position:relative; display:flex; flex-direction:column; align-items:center; gap:4px; padding:30px 10px 14px; min-height:180px; text-align:center; color:var(--on);
+  background:linear-gradient(170deg,#fff,color-mix(in srgb,var(--c) 55%,#e6f6ff)); border-radius:30px; border:3px solid #fff;
+  box-shadow:0 8px 0 color-mix(in srgb,var(--c) 75%,#2a5ca8), 0 16px 26px rgba(20,70,130,.22), inset 0 0 22px rgba(255,255,255,.9); transition:transform .15s; overflow:hidden; }
+.island::before{ content:''; position:absolute; left:-4px; right:-4px; top:-4px; height:26px;
+  background:radial-gradient(circle at 12% 0,#fff 0 16px,transparent 17px),radial-gradient(circle at 34% -2px,#fff 0 19px,transparent 20px),radial-gradient(circle at 58% 0,#fff 0 17px,transparent 18px),radial-gradient(circle at 82% -2px,#fff 0 19px,transparent 20px),radial-gradient(circle at 100% 0,#fff 0 14px,transparent 15px); }
+.island:nth-child(even){ transform:translateY(12px); }
+.island:active{ transform:translateY(8px); }
+.island .em{ font-size:2.4rem; line-height:1; }
+.island .num{ width:44px; height:44px; display:grid; place-items:center; border-radius:50%; background:#fff; color:var(--on); font-size:1.5rem; font-weight:900; box-shadow:0 3px 0 rgba(20,70,130,.3); }
+.island b{ font-size:clamp(1.05rem,2.8vw,1.3rem); line-height:1.15; }
+.island small{ color:var(--ink); font-weight:800; font-size:.92rem; opacity:.85; }
+.island .done{ position:absolute; top:16px; right:12px; font-size:1.4rem; }
+.big{ display:flex; align-items:center; justify-content:center; gap:12px; width:100%; margin-top:26px; padding:18px; font-size:clamp(1.3rem,4vw,1.8rem); font-weight:900; color:var(--on); text-align:left;
+  background:linear-gradient(180deg,#fff2a6,#ffcf4d); border-radius:28px; border:3px solid #fff; box-shadow:0 8px 0 #d99a14, var(--shadow); }
+.big.duelb{ background:linear-gradient(180deg,#d9f1ff,#79c4ff); box-shadow:0 8px 0 #3b87c9, var(--shadow); margin-top:18px; }
+.big:active{ transform:translateY(6px); }
+.big small{ display:block; font-size:.85rem; font-weight:800; opacity:.85; }
+.reset{ display:block; margin:24px auto 0; padding:10px 18px; background:rgba(255,255,255,.7); color:var(--ink); font-size:1rem; border-radius:999px; }
+
+/* экран уровня */
+.lvhead{ --c:var(--l1); display:flex; align-items:center; gap:14px; padding:16px; border-radius:26px; background:linear-gradient(170deg,#fff,color-mix(in srgb,var(--c) 60%,#e6f6ff)); border:3px solid #fff; box-shadow:0 6px 0 color-mix(in srgb,var(--c) 75%,#2a5ca8), var(--shadow); margin-bottom:16px; color:var(--on); }
+.lvhead .em{ font-size:2.8rem; }
+.lvhead h1{ font-size:clamp(1.5rem,4.6vw,2.2rem); margin:0; }
+.intro{ background:var(--card); border-radius:22px; padding:14px 16px; box-shadow:var(--shadow); margin-bottom:16px; font-weight:800; font-size:1.1rem; border:3px solid #fff; }
+.intro h3{ margin:0 0 8px; font-size:1.2rem; }
+.tbl{ display:grid; gap:6px; margin-top:8px; }
+.tbl .r{ display:grid; grid-template-columns:76px 1fr auto; gap:10px; align-items:center; padding:8px 12px; background:color-mix(in srgb,var(--bg) 70%,#fff); border-radius:14px; font-size:1.35rem; }
+.tbl .r b{ color:#0d4aa6; font-size:1.1rem; }
+.tbl .r i{ font-style:normal; font-size:.82em; color:var(--muted); }
+.tbl .help{ padding:4px 14px; border-radius:999px; background:#fff3b8; color:var(--on); font-size:1.05rem; box-shadow:0 3px 0 #e0c24c; }
+.tbl em{ font-style:normal; color:#d12f1a; font-weight:900; text-decoration:underline; text-decoration-thickness:3px; text-underline-offset:3px; }
+.stages{ display:grid; gap:12px; }
+.stage{ --c:var(--l1); display:flex; align-items:center; gap:14px; width:100%; padding:14px 16px; text-align:left; background:#fff; color:var(--on); border-radius:24px; box-shadow:0 6px 0 var(--edge), var(--shadow); min-height:78px; }
+.stage:active{ transform:translateY(4px); box-shadow:0 2px 0 var(--edge); }
+.stage .n{ flex:none; width:48px; height:48px; display:grid; place-items:center; border-radius:50%; background:var(--c); font-size:1.4rem; font-weight:900; }
+.stage b{ display:block; font-size:1.25rem; line-height:1.2; }
+.stage small{ color:var(--muted); font-weight:800; font-size:.95rem; }
+.stage .ck{ margin-left:auto; font-size:1.6rem; }
+
+/* задание */
+.hud{ display:flex; justify-content:space-between; align-items:center; gap:8px; font-size:1rem; color:var(--ink); font-weight:900; flex-wrap:wrap; }
+.back{ padding:8px 14px; background:#fff; color:var(--on); border-radius:999px; box-shadow:0 3px 0 var(--edge); font-size:.95rem; font-weight:900; }
+.bar{ height:16px; margin:8px 0 12px; border-radius:999px; background:#fff; box-shadow:inset 0 2px 5px rgba(20,70,130,.3); overflow:hidden; }
+.bar i{ display:block; height:100%; background:linear-gradient(90deg,#6ed0ff,#b9a6ff); border-radius:999px; transition:width .5s; }
+.mascots{ display:flex; align-items:center; gap:10px; margin-bottom:8px; }
+.mascot{ font-size:clamp(2.6rem,9vw,4rem); filter:drop-shadow(0 5px 6px rgba(20,70,130,.3)); transform-origin:50% 90%; }
+.mascot.cheer{ animation:cheer .9s ease; } .mascot.oops{ animation:oops .6s ease; }
+@keyframes cheer{ 30%{ transform:translateY(-22px) rotate(-8deg) scale(1.15); } 60%{ transform:translateY(0) rotate(6deg); } }
+@keyframes oops{ 25%{ transform:rotate(-14deg); } 55%{ transform:rotate(12deg); } 80%{ transform:rotate(-6deg); } }
+.prompt{ flex:1; margin:0; font-size:clamp(1.5rem,4.6vw,2.3rem); font-weight:900; line-height:1.15; text-align:center; color:#0b3f95; text-shadow:0 2px 0 #fff; }
+.bigword{ margin:8px 0 12px; text-align:center; font-size:clamp(2.2rem,9vw,3.8rem); font-weight:900; line-height:1.15; color:var(--ink); }
+.bigword small{ display:block; font-size:.42em; color:var(--muted); font-weight:800; }
+.sentence{ margin:10px 0 14px; font-size:clamp(1.7rem,5.2vw,2.5rem); line-height:1.5; font-weight:900; color:var(--ink); }
+.mk{ padding:2px 12px; border-radius:14px; background:#fff0a6; color:var(--on); }
+.mk.on{ box-shadow:0 0 0 4px #ff8a3d; }
+.mk.bad{ background:var(--bad); color:var(--on); text-decoration:line-through; text-decoration-color:#d12f1a; text-decoration-thickness:4px; }
+.mk.good{ background:var(--good); color:var(--on); animation:pop .4s ease; }
+.blank{ display:inline-block; min-width:4.5ch; border-bottom:6px dashed #ff8a3d; }
+@keyframes pop{ 50%{ transform:scale(1.15); } }
+.note{ display:inline-block; margin:0 0 8px; padding:6px 16px; background:#fff; color:var(--ink); border-radius:999px; box-shadow:0 3px 0 var(--edge); font-size:1.1rem; }
+.ask{ margin:8px 0 6px; font-size:clamp(1.2rem,3.4vw,1.55rem); color:var(--ink); font-weight:900; }
+
+/* снежные шары */
+.opts{ display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,170px),1fr)); gap:16px; margin-top:12px; }
+.opts.six{ grid-template-columns:repeat(auto-fit,minmax(min(100%,120px),1fr)); }
+.opt,.dcard{ color:var(--on); font-weight:900; line-height:1.15; border:3px solid #fff; border-radius:999px;
+  background:radial-gradient(circle at 30% 24%,#fff 0 18%,#eef8ff 40%,#cfe6fa 75%,#a9ccf0 100%);
+  box-shadow:inset -10px -12px 18px rgba(90,150,215,.38), inset 6px 6px 12px rgba(255,255,255,.9), 0 9px 0 #8fbbe3, 0 16px 22px rgba(20,70,130,.28); }
+.opt{ min-height:92px; padding:14px 18px; font-size:clamp(1.45rem,4.4vw,2.05rem); }
+.opt small{ display:block; margin-top:2px; font-size:.6em; color:#1d3f70; font-weight:800; }
+.opt.q,.dcard.q{ text-transform:uppercase; letter-spacing:.01em; }
+.opt:active:not(:disabled){ transform:translateY(6px); box-shadow:inset -10px -12px 18px rgba(90,150,215,.38), 0 3px 0 #8fbbe3; }
+.opt.ok{ background:radial-gradient(circle at 30% 24%,#fff 0 14%,#c8ffe6 40%,#6eeab4 100%); animation:pop .45s ease; }
+.opt.no{ background:radial-gradient(circle at 30% 24%,#fff 0 14%,#ffe3ea 40%,#ff9db6 100%); animation:wob .45s ease; }
+.opt:disabled{ cursor:default; }
+.hintrow{ display:flex; justify-content:center; margin-top:24px; }
+.btn{ padding:14px 26px; min-height:56px; background:linear-gradient(180deg,#a5dcff,#4aa8f5); color:var(--on); font-weight:900; font-size:1.2rem; border-radius:20px; border:3px solid #fff; box-shadow:0 6px 0 #2b78bd, 0 12px 18px rgba(20,70,130,.25); }
+.btn:active{ transform:translateY(4px); box-shadow:0 2px 0 #2b78bd; }
+.btn.hint{ background:linear-gradient(180deg,#fff2a6,#ffcf4d); box-shadow:0 6px 0 #d99a14; }
+.btn.alt{ background:#fff; box-shadow:0 6px 0 var(--edge); }
+.btn.go{ background:linear-gradient(180deg,#b9ffe0,#4fdca0); box-shadow:0 6px 0 #26a374; }
+.hintbox{ margin:14px auto 0; padding:14px 18px; max-width:680px; background:#fff; color:var(--on); border-radius:20px; box-shadow:var(--shadow); font-weight:900; font-size:1.2rem; animation:pop .35s ease; border:3px solid #ffd45c; }
+.hintbox[hidden]{ display:none; }
+
+/* перетаскивание */
+.pool{ display:flex; flex-wrap:wrap; justify-content:center; gap:16px; min-height:90px; margin:18px 0 6px; padding:16px; background:rgba(255,255,255,.5); border:3px dashed #7eb2e2; border-radius:26px; }
+.pool:empty{ display:none; }
+.dcard{ position:relative; z-index:5; display:inline-flex; flex-direction:column; align-items:center; justify-content:center; padding:16px 26px; min-width:104px; min-height:96px; font-size:clamp(1.45rem,4.2vw,2.05rem); touch-action:none; user-select:none; -webkit-user-select:none; cursor:grab; }
+.dcard span{ display:block; }
+.dcard small{ font-size:.6em; color:#1d3f70; font-weight:800; }
+.dcard.dragging{ z-index:40; cursor:grabbing; box-shadow:inset -10px -12px 18px rgba(90,150,215,.38), 0 22px 0 rgba(0,0,0,.08), 0 26px 30px rgba(20,70,130,.35); }
+.dcard.sel{ outline:5px solid #ff8a3d; outline-offset:3px; }
+.dcard.placed{ cursor:default; min-height:60px; min-width:0; padding:8px 18px; font-size:clamp(1.25rem,3.6vw,1.7rem); box-shadow:inset -6px -8px 12px rgba(90,150,215,.35), 0 4px 0 #8fbbe3; touch-action:auto; background:radial-gradient(circle at 30% 24%,#fff 0 14%,#c8ffe6 45%,#7cecbc 100%); }
+.dcard.gone{ display:none; }
+.slot{ position:relative; min-height:72px; display:flex; align-items:center; justify-content:center; flex-wrap:wrap; gap:8px; padding:6px; background:rgba(255,255,255,.85); border:4px dashed #6fa6dc; border-radius:22px; transition:transform .15s, border-color .15s; }
+.slot .ph{ color:var(--muted); font-size:1.1rem; font-weight:800; }
+.slot.filled .ph{ display:none; }
+.slot.filled{ border-style:solid; border-color:#37d08f; }
+.slot.over{ transform:scale(1.05); border-color:#ff8a3d; background:#fff6c9; }
+.slot.bad{ animation:wob .45s ease; border-color:#e0452f; }
+.slot.good{ animation:pop .4s ease; }
+@keyframes wob{ 20%{ transform:translateX(-8px); } 40%{ transform:translateX(8px); } 60%{ transform:translateX(-5px); } 80%{ transform:translateX(4px); } }
+.order{ display:grid; grid-template-columns:repeat(3,1fr); gap:12px; }
+.order .slotwrap{ display:flex; flex-direction:column; align-items:center; gap:4px; }
+.order .num{ width:38px; height:38px; display:grid; place-items:center; border-radius:50%; background:var(--warn); color:var(--on); font-weight:900; font-size:1.2rem; }
+.order .slot{ width:100%; min-height:100px; }
+.pairs{ display:grid; gap:12px; }
+.pair{ display:grid; grid-template-columns:minmax(170px,46%) 1fr; gap:12px; align-items:center; }
+.plabel{ display:flex; align-items:center; gap:10px; padding:8px 12px; background:#fff; color:var(--on); border-radius:18px; box-shadow:0 4px 0 var(--edge); text-align:left; }
+.plabel .pa{ flex:none; min-width:3.4ch; font-size:1.7rem; line-height:1; font-weight:900; }
+.plabel .pt{ font-size:1.05rem; line-height:1.25; color:#1d3f70; font-weight:800; }
+.pair .slot{ min-height:64px; }
+.chain{ display:flex; flex-direction:column; align-items:center; gap:6px; }
+.chain .slot,.chain .fixed{ width:min(100%,460px); }
+.row{ display:flex; flex-wrap:wrap; justify-content:center; align-items:center; gap:12px; }
+.row .slot{ min-width:150px; }
+.fixed{ padding:12px 20px; text-align:center; background:linear-gradient(180deg,#bfe4ff,#7cc2ff); color:var(--on); border-radius:20px; box-shadow:0 5px 0 #3b87c9; font-size:1.6rem; font-weight:900; }
+.fixed small{ display:block; font-size:.6em; font-weight:800; }
+.arrow{ font-size:1.4rem; line-height:1; }
+.cats{ display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,150px),1fr)); gap:14px; }
+.bin{ flex-direction:column; justify-content:flex-start; align-items:stretch; min-height:170px; padding:8px; }
+.binhead{ text-align:center; font-weight:900; font-size:1.2rem; line-height:1.15; padding:8px; border-radius:14px; background:#d3eaff; color:var(--on); }
+.binhead small{ display:block; font-size:.7em; color:#1d3f70; }
+.chips{ display:flex; flex-wrap:wrap; gap:8px; justify-content:center; padding-top:8px; }
+
+/* карточки сбоку от падежей (чтобы не листать вниз) */
+.sortbox{ container-type:inline-size; }
+.sortwrap{ display:grid; grid-template-columns:1fr; gap:14px; }
+.sortmain{ position:relative; z-index:1; min-width:0; }
+.sortwrap .pool{ position:relative; z-index:6; margin:12px 0 0; }
+@container (min-width:400px){
+  .sortbox .sortwrap{ grid-template-columns:minmax(0,1.7fr) minmax(0,1fr); align-items:start; gap:14px; }
+  .sortbox .sortwrap .pool{ display:grid; grid-template-columns:repeat(auto-fit,minmax(118px,1fr)); gap:10px; margin:0; padding:10px; position:sticky; top:calc(env(safe-area-inset-top,0px) + 112px); }
+  .sortbox .sortwrap .dcard{ min-width:0; width:100%; padding:8px 10px; min-height:62px; font-size:clamp(1.2rem,2.3vw,1.7rem); overflow-wrap:anywhere; text-align:center; }
+  .sortbox .sortwrap .dcard.placed{ width:auto; min-height:44px; padding:6px 12px; }
+  .sortbox .sortwrap .order{ grid-template-columns:repeat(2,1fr); }
+  .sortbox .sortwrap .pair{ grid-template-columns:minmax(170px,46%) 1fr; }
+  .sortbox .sortwrap .row .slot{ min-width:110px; }
+}
+/* итоги */
+.result{ text-align:center; padding-top:12px; }
+.zoom{ animation:zoomin 1.6s ease both; }
+@keyframes zoomin{ from{ transform:scale(.5); opacity:0; } 45%{ transform:scale(1.18); opacity:1; } to{ transform:scale(1); } }
+.bigstars{ font-size:3.4rem; letter-spacing:.1em; margin:8px 0 14px; }
+.bigstars span{ display:inline-block; animation:starin .5s both; }
+.bigstars span:nth-child(2){ animation-delay:.2s; } .bigstars span:nth-child(3){ animation-delay:.4s; }
+@keyframes starin{ from{ transform:scale(0) rotate(-90deg); } 70%{ transform:scale(1.4) rotate(10deg); } }
+.stats{ display:inline-grid; gap:8px; margin:6px 0 20px; text-align:left; font-size:1.3rem; }
+.actions{ display:grid; gap:14px; max-width:380px; margin:0 auto; }
+
+/* моя практика */
+.panelbox{ background:var(--card); border-radius:24px; padding:16px; box-shadow:var(--shadow); margin-bottom:16px; display:grid; gap:12px; border:3px solid #fff; }
+.field{ display:grid; gap:4px; font-size:1.05rem; color:var(--ink); font-weight:900; }
+.in{ width:100%; padding:12px 14px; font-size:1.4rem; font-weight:800; background:#fff; color:var(--on); border:3px solid #9cc4ea; border-radius:16px; }
+.seg{ display:flex; flex-wrap:wrap; gap:8px; }
+.seg .chip.on{ background:var(--good); }
+.words{ display:flex; flex-wrap:wrap; gap:10px; margin-bottom:16px; }
+.wchip{ display:inline-flex; align-items:center; gap:4px; background:#fff; color:var(--on); border-radius:999px; box-shadow:0 4px 0 var(--edge); padding:4px 4px 4px 16px; font-weight:900; font-size:1.2rem; }
+.wchip button{ background:transparent; padding:6px 10px; font-size:1rem; }
+.frow{ display:grid; grid-template-columns:100px 1fr; gap:10px; align-items:center; }
+.frow span{ font-size:1.1rem; font-weight:900; color:var(--ink); line-height:1.1; }
+.frow span small{ display:block; font-size:.8em; color:var(--muted); }
+.msg{ min-height:1.4em; font-weight:800; color:#b3261e; font-size:1.05rem; }
+
+/* снежный бой */
+.teams{ display:grid; grid-template-columns:1fr auto 1fr; gap:8px; align-items:center; margin-bottom:12px; }
+.vs{ font-family:'Comfortaa',sans-serif; font-size:1.5rem; color:#0d4aa6; text-shadow:0 2px 0 #fff; }
+.team{ background:rgba(255,255,255,.92); color:var(--on); border-radius:26px; padding:10px 8px; text-align:center; border:5px solid transparent; box-shadow:var(--shadow); transition:transform .2s, border-color .2s; }
+.team.on{ border-color:#ff8a3d; transform:scale(1.03); box-shadow:0 0 0 4px rgba(255,138,61,.3), var(--shadow); }
+.team.hit{ animation:wob .5s ease; background:#ffd6dd; }
+.avemo{ display:block; font-size:clamp(2.6rem,10vw,3.8rem); line-height:1.1; }
+.avimg{ width:clamp(64px,16vw,92px); height:clamp(64px,16vw,92px); border-radius:50%; object-fit:cover; border:4px solid #fff; box-shadow:0 4px 10px rgba(20,70,130,.35); }
+.tname{ font-weight:900; font-size:clamp(1.05rem,3.4vw,1.4rem); line-height:1.1; margin:2px 0; word-break:break-word; }
+.hearts{ font-size:clamp(1.1rem,3.6vw,1.5rem); letter-spacing:.05em; }
+.ammo{ font-size:clamp(1rem,3.2vw,1.3rem); font-weight:900; }
+.ammo.pop{ animation:pop .5s ease; }
+.turnbar{ text-align:center; font-size:1.2rem; margin:4px 0 6px; font-weight:900; }
+.turnbar b{ color:#0d4aa6; }
+.setup{ display:grid; gap:16px; }
+.tsetup{ display:grid; gap:10px; }
+.emos{ display:flex; flex-wrap:wrap; gap:8px; }
+.emos .chip{ font-size:1.6rem; padding:6px 12px; }
+.emos .chip.on{ background:var(--good); }
+.avprev{ display:flex; align-items:center; gap:12px; }
+
+/* двое игроков одновременно */
+.arena{ display:grid; gap:12px; grid-template-columns:1fr; }
+.arena .scorebar{ order:0; }
+.pl{ --pc:#6fb8ff; background:rgba(255,255,255,.93); color:var(--on); border-radius:28px; padding:12px; border:6px solid var(--pc); box-shadow:var(--shadow); }
+.pl1{ --pc:#b79cff; }
+.pl .phead{ display:flex; align-items:center; gap:10px; }
+.pl .avemo{ font-size:2.6rem; line-height:1; }
+.pl .avimg,.pl .himg.av{ width:64px; height:64px; margin:0; border-radius:50%; flex:none; }
+.pl .himg.av{ border-radius:0; }
+.pinfo{ flex:1; min-width:0; }
+.pl .tname{ font-size:1.25rem; margin:0; text-align:left; }
+.pl .hearts{ font-size:1.15rem; } .pl .ammo{ font-size:1rem; }
+.pts{ padding:4px 16px; background:var(--warn); color:var(--on); border-radius:999px; font-size:1.7rem; font-weight:900; box-shadow:0 3px 0 #d9a91d; }
+.pts.pop{ animation:pop .5s ease; }
+.pq{ margin:6px 0 0; font-size:1rem; font-weight:900; color:var(--muted); }
+.pprompt{ margin:4px 0 0; font-size:1.35rem; font-weight:900; color:#0b3f95; }
+.pl .sentence{ font-size:clamp(1.5rem,3.4vw,2rem); margin:6px 0 8px; }
+.pl .bigword{ font-size:clamp(1.8rem,5vw,2.6rem); margin:4px 0 6px; }
+.pl .dcard{ font-size:clamp(1.3rem,3vw,1.7rem); padding:12px 20px; min-height:80px; }
+.pl .pool{ padding:10px; gap:12px; }
+.pl .pair{ grid-template-columns:minmax(160px,46%) 1fr; }
+.otr .otbox{ margin-bottom:12px; }
+.pl .otbox{ padding:10px; gap:8px; }
+.o-edit{ background:#f1f8ff; border-radius:16px; padding:8px 12px; }
+.o-edit summary{ cursor:pointer; font-weight:900; font-size:1.05rem; }
+.o-edit .frow{ margin-top:8px; }
+.pl .opts{ gap:12px; margin-top:8px; } .pl .opt{ min-height:78px; font-size:clamp(1.3rem,3.6vw,1.7rem); }
+.pl .ask{ font-size:1.15rem; margin:4px 0; }
+.pfb{ min-height:2.2rem; margin-top:8px; padding:6px 12px; border-radius:16px; text-align:center; font-size:1.2rem; font-weight:900; }
+.pfb.good{ background:var(--good); } .pfb.bad{ background:var(--bad); } .pfb.flash{ animation:pop .4s ease; }
+.pl.hit{ animation:shake .5s ease; }
+@keyframes shake{ 20%{ translate:-9px 0; } 40%{ translate:9px 0; } 60%{ translate:-6px 0; } 80%{ translate:4px 0; } }
+.scorebar{ display:flex; justify-content:center; align-items:center; gap:12px; padding:8px 14px; background:rgba(255,255,255,.9); color:var(--on); border-radius:999px; font-size:1.3rem; font-weight:900; box-shadow:var(--shadow); }
+.scorebar .sb.lead{ color:#0d4aa6; } .scorebar b{ font-size:1.5rem; }
+.rt{ font-size:1.05rem; margin-top:2px; }
+@media (min-width:760px){
+  .arena.side{ grid-template-columns:1fr 1fr; grid-template-areas:'bar bar' 'p0 p1'; }
+  .arena.side .scorebar{ grid-area:bar; } .arena.side .pl0{ grid-area:p0; } .arena.side .pl1{ grid-area:p1; }
+}
+.arena.face .pl0{ transform:rotate(180deg); }
+.duelwrap{ max-width:none; margin:0 auto; touch-action:pan-y; }
+main:has(.sortbox){ max-width:min(1500px,100%); }
+body:has(.duelwrap) main{ max-width:min(1900px,100%); }
+.otbox[hidden]{ display:none; }
+.o-bar{ display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:8px; padding:6px 10px; background:#fff; border-radius:16px; box-shadow:var(--shadow); font-size:1.1rem; }
+.o-bar[hidden]{ display:none; }
+/* обратная связь */
+.toast,.banner{ position:fixed; left:50%; z-index:50; pointer-events:none; opacity:0; text-align:center; font-weight:900; color:var(--on); }
+.toast{ top:30%; max-width:92vw; padding:14px 26px; font-size:clamp(1.25rem,4.4vw,1.8rem); border-radius:999px; border:3px solid #fff; box-shadow:0 8px 0 rgba(0,0,0,.14), var(--shadow); transform:translate(-50%,0) scale(.6); }
+.toast.good{ background:var(--good); } .toast.try{ background:var(--warn); }
+.toast.show{ animation:toast 1.6s ease both; }
+@keyframes toast{ 0%{ opacity:0; transform:translate(-50%,10px) scale(.6); } 15%{ opacity:1; transform:translate(-50%,0) scale(1.1); } 25%{ transform:translate(-50%,0) scale(1); } 80%{ opacity:1; } 100%{ opacity:0; transform:translate(-50%,-14px) scale(1); } }
+.banner{ top:46%; padding:16px 28px; font-size:clamp(1.6rem,6vw,2.4rem); border-radius:28px; background:linear-gradient(180deg,#ffd9a8,#ff9f55); border:3px solid #fff; box-shadow:0 10px 0 rgba(0,0,0,.18); transform:translate(-50%,-50%) scale(.5); }
+.banner.show{ animation:banner 1.8s ease both; }
+@keyframes banner{ 0%{ opacity:0; transform:translate(-50%,-50%) scale(.4) rotate(-6deg); } 15%{ opacity:1; transform:translate(-50%,-50%) scale(1.2) rotate(3deg); } 28%{ transform:translate(-50%,-50%) scale(1) rotate(0); } 80%{ opacity:1; } 100%{ opacity:0; transform:translate(-50%,-60%) scale(1); } }
+.fx{ position:fixed; left:0; top:0; z-index:60; pointer-events:none; width:34px; height:34px; line-height:34px; text-align:center; font-size:30px; }
+#confetti{ position:fixed; inset:0; width:100%; height:100%; z-index:55; pointer-events:none; }
+/* свои картинки (оформление) */
+.himg{ display:block; object-fit:contain; mix-blend-mode:multiply; filter:drop-shadow(0 6px 8px rgba(20,70,130,.3)); flex:none; }
+.himg.hero{ height:clamp(110px,26vw,190px); width:auto; max-width:30vw; animation:bob 3s ease-in-out infinite; }
+.himg.mas{ height:clamp(76px,17vw,124px); width:auto; max-width:24vw; }
+.himg.av{ width:clamp(76px,19vw,110px); height:clamp(76px,19vw,110px); margin:0 auto; }
+html.has-bg main{ background:color-mix(in srgb,var(--card) 68%,transparent); border-radius:30px; margin-top:14px; backdrop-filter:blur(3px); box-shadow:0 10px 30px rgba(20,70,130,.2); }
+.bgprev{ width:100%; max-width:320px; height:150px; border-radius:18px; background:#cfe6fa center/cover; border:3px solid #fff; box-shadow:var(--shadow); }
+.thprev{ display:flex; align-items:center; gap:14px; flex-wrap:wrap; }
+.thprev .himg{ height:130px; width:auto; max-width:160px; }
+@media (max-width:480px){ .vol span.l{ min-width:96px; } .chip{ padding:6px 12px; font-size:.9rem; } .island:nth-child(even){ transform:none; } .teams{ grid-template-columns:1fr 1fr; } .vs{ display:none; } .tbl .r{ grid-template-columns:62px 1fr auto; font-size:1.15rem; } }
+@media (prefers-reduced-motion: reduce){ .zoom,.bigstars span,.slot.bad,.opt.no,.mk.good,.hintbox,.hchar,.mascot,.team.hit{ animation-duration:.01s; animation-iteration-count:1; } .snow{ display:none; } .bar i,.pbar i{ transition:none; } }
+</style>
+</head>
+<body>
+<div class="snow" id="snow" aria-hidden="true"></div>
+<header class="top">
+  <div class="row">
+    <button class="chip" id="homeBtn" aria-label="Домой">🏠 Домой</button>
+    <span class="chip stat stars" id="starCounter">⭐ Звёзды: <span id="starCount">0</span></span>
+    <span class="chip fire" id="streakChip">🔥 Серия: <span id="streakCount">0</span></span>
+  </div>
+  <div class="row">
+    <button class="chip" id="soundBtn" data-nosound="1" aria-pressed="true">🔊 Звук</button>
+    <button class="chip off" id="musicBtn" data-nosound="1" aria-pressed="false">🎵 Музыка</button>
+    <button class="chip" id="gearBtn" data-nosound="1" aria-expanded="false" aria-label="Громкость">⚙️ Громкость</button>
+  </div>
+  <div class="panel" id="panel" hidden>
+    <label class="vol"><span class="l">🎵 ГРОМКОСТЬ</span><input type="range" id="masterVol" min="0" max="100" step="1"><output id="masterOut">80%</output></label>
+    <label class="vol"><span class="l">🔊 Эффекты</span><input type="range" id="sfxVol" min="0" max="100" step="1"><output id="sfxOut">90%</output></label>
+    <label class="vol"><span class="l">🎵 Музыка</span><input type="range" id="musVol" min="0" max="100" step="1"><output id="musOut">50%</output></label>
+  </div>
+</header>
+<main id="screen"></main>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<div class="banner" id="banner" role="status" aria-live="polite"></div>
+<canvas id="confetti"></canvas>
+<script>
+(() => {
+'use strict';
+const $ = s => document.querySelector(s);
+const shuffle = a => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+const cap = s => s.charAt(0).toUpperCase() + s.slice(1);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;' }[c]));
+
+/* ================= АУДИО (Web Audio API) ================= */
+const Snd = (() => {
+  const KEY = 'padezhi-quest-audio-v1';
+  const S = { on:true, master:80, sfx:90, music:50, musicOn:false };
+  try { const r = JSON.parse(localStorage.getItem(KEY) || 'null'); if (r && typeof r === 'object') for (const k in S) if (k in r && typeof r[k] === typeof S[k]) S[k] = r[k]; } catch (e) {}
+  const save = () => { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} };
+  let ctx = null, master, sfx, mus, supported = !!(window.AudioContext || window.webkitAudioContext);
+  let mTimer = 0, mGains = [], mRunning = false;
+  function applyVols(now) {
+    if (!ctx) return;
+    const t = ctx.currentTime, k = now ? 0.001 : 0.03;
+    master.gain.setTargetAtTime(S.on ? Math.pow(S.master / 100, 1.6) : 0, t, k);
+    sfx.gain.setTargetAtTime(Math.pow(S.sfx / 100, 1.6), t, k);
+    mus.gain.setTargetAtTime(Math.pow(S.music / 100, 1.6) * 0.18, t, k);
+  }
+  function ensure() {
+    if (!supported) return false;
+    try {
+      if (!ctx) {
+        const AC = window.AudioContext || window.webkitAudioContext; ctx = new AC();
+        master = ctx.createGain(); sfx = ctx.createGain(); mus = ctx.createGain();
+        sfx.connect(master); mus.connect(master); master.connect(ctx.destination); applyVols(true);
+      }
+      if (ctx.state === 'suspended') ctx.resume();
+      return true;
+    } catch (e) { supported = false; return false; }
+  }
+  const go = () => S.on && ensure();
+  function tone(f, t0, d, o = {}) {
+    const { type = 'sine', v = 0.3, to = null, a = 0.008, out = sfx } = o;
+    const osc = ctx.createOscillator(), g = ctx.createGain(), t = ctx.currentTime + t0;
+    osc.type = type; osc.frequency.setValueAtTime(f, t);
+    if (to) osc.frequency.exponentialRampToValueAtTime(to, t + d);
+    g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(v, t + a); g.gain.exponentialRampToValueAtTime(0.0001, t + d);
+    osc.connect(g); g.connect(out); osc.start(t); osc.stop(t + d + 0.05);
+  }
+  function noise(t0, d, o = {}) {
+    const { f0 = 400, f1 = 2000, v = 0.12, q = 0.8 } = o;
+    const len = Math.max(1, Math.floor(ctx.sampleRate * d)), buf = ctx.createBuffer(1, len, ctx.sampleRate), data = buf.getChannelData(0);
+    for (let i = 0; i < len; i++) data[i] = Math.random() * 2 - 1;
+    const src = ctx.createBufferSource(); src.buffer = buf;
+    const bp = ctx.createBiquadFilter(); bp.type = 'bandpass'; bp.Q.value = q;
+    const t = ctx.currentTime + t0;
+    bp.frequency.setValueAtTime(f0, t); bp.frequency.exponentialRampToValueAtTime(f1, t + d);
+    const g = ctx.createGain(); g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(v, t + d * 0.35); g.gain.exponentialRampToValueAtTime(0.0001, t + d);
+    src.connect(bp); bp.connect(g); g.connect(sfx); src.start(t);
+  }
+  const safe = fn => (...a) => { if (!go()) return; try { fn(...a); } catch (e) {} };
+  const playClick = safe(() => tone(640, 0, 0.07, { v:0.26, to:430 }));
+  const playDrag = safe(() => noise(0, 0.17, { f0:300, f1:1800, v:0.1 }));
+  const playDrop = safe(() => tone(360, 0, 0.1, { v:0.32, to:190 }));
+  const playPlace = safe(() => { tone(880, 0.05, 0.1, { type:'triangle', v:0.2 }); tone(1175, 0.12, 0.14, { type:'triangle', v:0.2 }); });
+  const playCorrect = safe(() => {
+    tone(784, 0, 0.24, { type:'triangle', v:0.3 }); tone(1568, 0, 0.12, { v:0.07 });
+    tone(1047, 0.12, 0.28, { type:'triangle', v:0.3 }); tone(2093, 0.12, 0.14, { v:0.06 });
+    tone(1319, 0.25, 0.45, { type:'triangle', v:0.3 }); tone(2637, 0.25, 0.2, { v:0.05 });
+  });
+  const playWrong = safe(() => { tone(310, 0, 0.14, { v:0.28, to:250 }); tone(270, 0.18, 0.2, { v:0.28, to:205 }); });
+  const playHint = safe(() => { tone(1760, 0, 0.3, { v:0.2 }); tone(2637, 0, 0.2, { v:0.05 }); });
+  const playStar = safe(() => { tone(1319, 0, 0.12, { v:0.18 }); tone(1760, 0.08, 0.14, { v:0.18 }); tone(2349, 0.16, 0.3, { v:0.16, type:'triangle' }); });
+  const playCombo = safe(n => {
+    if (n >= 10) { [523, 659, 784, 1047].forEach((f, i) => tone(f, i * 0.1, 0.22, { type:'triangle', v:0.3 })); [1047, 1319, 1568].forEach(f => tone(f, 0.45, 0.6, { type:'triangle', v:0.2 })); noise(0.4, 0.5, { f0:3000, f1:7000, v:0.05 }); }
+    else if (n >= 5) { [784, 988, 1175, 1568, 1976].forEach((f, i) => tone(f, i * 0.06, 0.2, { type:'triangle', v:0.26 })); noise(0.25, 0.3, { f0:3000, f1:6500, v:0.04 }); }
+    else [1047, 1319, 1568].forEach((f, i) => tone(f, i * 0.07, 0.2, { type:'triangle', v:0.26 }));
+  });
+  const playStageComplete = safe(() => { [523, 659, 784, 1047].forEach((f, i) => tone(f, i * 0.11, 0.25, { type:'triangle', v:0.28 })); tone(1319, 0.45, 0.5, { type:'triangle', v:0.25 }); tone(1047, 0.45, 0.5, { v:0.12 }); });
+  const playLevelComplete = safe(() => { [523, 659, 784, 1047, 784, 1047, 1319].forEach((f, i) => tone(f, i * 0.12, 0.26, { type:'triangle', v:0.28 })); [1047, 1319, 1568].forEach(f => tone(f, 0.9, 0.7, { type:'triangle', v:0.2 })); noise(0.85, 0.5, { f0:3000, f1:7000, v:0.05 }); });
+  const playFinalVictory = safe(() => {
+    [[392,0,.14],[392,.16,.14],[392,.32,.14],[523,.5,.4],[440,.95,.14],[523,1.12,.55],[659,1.7,.7]].forEach(([f, t, d]) => { tone(f, t, d, { type:'triangle', v:0.3 }); tone(f * 2, t, d, { v:0.05 }); });
+    [523, 659, 784, 1047].forEach(f => tone(f, 1.7, 1.1, { type:'triangle', v:0.18 })); noise(1.6, 0.9, { f0:3000, f1:8000, v:0.05 });
+  });
+  const playThrow = safe(() => { noise(0, 0.28, { f0:500, f1:2600, v:0.14 }); tone(520, 0, 0.25, { v:0.12, to:900 }); });
+  const playHit = safe(() => { tone(170, 0, 0.18, { v:0.4, to:60 }); noise(0, 0.14, { f0:900, f1:300, v:0.16 }); });
+  const midi = m => 440 * Math.pow(2, (m - 69) / 12);
+  const MEL = [[64,1],[67,1],[69,1],[67,1],[64,1],[62,1],[60,2],[64,1],[67,1],[64,1],[62,1],[60,1],[62,1],[60,2]];
+  const BASS = [[48,4],[53,4],[48,4],[55,4]], BEAT = 60 / 72, LOOP = 16 * BEAT;
+  function schedule(startAt) {
+    if (!mRunning || !ctx) return;
+    const pg = ctx.createGain(); pg.connect(mus); mGains.push(pg);
+    const off = startAt - ctx.currentTime; let t = off;
+    MEL.forEach(([m, b]) => { tone(midi(m), t, b * BEAT * 0.95, { v:0.5, a:0.04, out:pg }); t += b * BEAT; });
+    t = off; BASS.forEach(([m, b]) => { tone(midi(m), t, b * BEAT, { v:0.55, a:0.4, out:pg }); t += b * BEAT; });
+    const next = startAt + LOOP;
+    mTimer = setTimeout(() => { schedule(next); if (mGains.length > 3) mGains.shift(); }, Math.max(100, (next - ctx.currentTime - 1) * 1000));
+  }
+  function stopMusic() {
+    mRunning = false; clearTimeout(mTimer);
+    if (ctx) mGains.forEach(g => { try { g.gain.setTargetAtTime(0, ctx.currentTime, 0.08); setTimeout(() => { try { g.disconnect(); } catch (e) {} }, 800); } catch (e) {} });
+    mGains = [];
+  }
+  function startMusic() { if (!S.on || !S.musicOn || !ensure()) return; stopMusic(); mRunning = true; schedule(ctx.currentTime + 0.15); }
+  return { S, save, ensure, applyVols, startMusic, stopMusic, playClick, playDrag, playDrop, playPlace, playCorrect, playWrong, playHint, playStar, playCombo, playStageComplete, playLevelComplete, playFinalVictory, playThrow, playHit };
+})();
+
+function syncAudioUI() {
+  const S = Snd.S;
+  $('#soundBtn').textContent = S.on ? '🔊 Звук' : '🔇 Звук выкл'; $('#soundBtn').classList.toggle('off', !S.on); $('#soundBtn').setAttribute('aria-pressed', String(S.on));
+  $('#musicBtn').textContent = S.musicOn ? '🎵 Музыка вкл' : '🎵 Музыка'; $('#musicBtn').classList.toggle('off', !S.musicOn); $('#musicBtn').setAttribute('aria-pressed', String(S.musicOn));
+  $('#masterVol').value = S.master; $('#masterOut').textContent = S.master + '%';
+  $('#sfxVol').value = S.sfx; $('#sfxOut').textContent = S.sfx + '%';
+  $('#musVol').value = S.music; $('#musOut').textContent = S.music + '%';
+}
+['pointerdown', 'keydown', 'touchstart'].forEach(ev => window.addEventListener(ev, function unlock() {
+  Snd.ensure(); if (Snd.S.musicOn) Snd.startMusic();
+  ['pointerdown', 'keydown', 'touchstart'].forEach(e2 => window.removeEventListener(e2, unlock, true));
+}, true));
+$('#soundBtn').addEventListener('click', () => {
+  Snd.S.on = !Snd.S.on; Snd.save(); Snd.ensure(); Snd.applyVols();
+  if (Snd.S.on) { Snd.playClick(); if (Snd.S.musicOn) Snd.startMusic(); } else Snd.stopMusic();
+  syncAudioUI();
+});
+$('#musicBtn').addEventListener('click', () => {
+  Snd.S.musicOn = !Snd.S.musicOn;
+  if (Snd.S.musicOn && !Snd.S.on) { Snd.S.on = true; Snd.ensure(); Snd.applyVols(); }
+  Snd.save(); if (Snd.S.musicOn) Snd.startMusic(); else Snd.stopMusic(); syncAudioUI();
+});
+$('#gearBtn').addEventListener('click', () => { const p = $('#panel'); p.hidden = !p.hidden; $('#gearBtn').setAttribute('aria-expanded', String(!p.hidden)); });
+[['#masterVol', 'master'], ['#sfxVol', 'sfx'], ['#musVol', 'music']].forEach(([sel, key]) => {
+  const el = $(sel);
+  el.addEventListener('input', () => { Snd.S[key] = +el.value; Snd.save(); Snd.ensure(); Snd.applyVols(); syncAudioUI(); });
+  el.addEventListener('change', () => { if (key !== 'music') Snd.playClick(); });
+});
+document.addEventListener('click', e => { const b = e.target.closest('button'); if (b && !b.dataset.nosound) Snd.playClick(); });
+syncAudioUI();
+
+/* ================= ХРАНИЛИЩЕ ================= */
+const PKEY = 'padezhi-quest-progress-v1', WKEY = 'padezhi-quest-words-v1';
+let P = { stars:0, done:{}, marathon:0 };
+try { const r = JSON.parse(localStorage.getItem(PKEY) || 'null'); if (r && typeof r === 'object') P = Object.assign(P, r); if (!P.done) P.done = {}; } catch (e) {}
+const saveP = () => { try { localStorage.setItem(PKEY, JSON.stringify(P)); } catch (e) {} };
+let WORDS = [];
+try { const r = JSON.parse(localStorage.getItem(WKEY) || '[]'); if (Array.isArray(r)) WORDS = r.filter(w => w && Array.isArray(w.forms) && w.forms.length === 6); } catch (e) {}
+const saveW = () => { try { localStorage.setItem(WKEY, JSON.stringify(WORDS)); } catch (e) {} };
+
+/* ================= СКЛОНЕНИЕ (для своих слов и словосочетаний) ================= */
+const prefO = f => /^[аоуиэ]/i.test(f) ? 'об' : 'о';
+const withPrep = forms => forms.map((f, i) => i === 5 ? prefO(f) + ' ' + f : f);
+function nounForms(word, g, an) {
+  const w = word.trim().toLowerCase(); if (!w) return null;
+  const L = w.slice(-1), st = w.slice(0, -1); let f = null;
+  if ((g === 'м' || g === 'ж') && (L === 'а' || L === 'я')) {
+    if (w.endsWith('ия')) f = [w, st + 'и', st + 'и', st + 'ю', st + 'ей', st + 'и'];
+    else if (L === 'а') { const e = st.slice(-1); f = [w, st + ('жшчщгкх'.includes(e) ? 'и' : 'ы'), st + 'е', st + 'у', st + ('жшчщц'.includes(e) ? 'ей' : 'ой'), st + 'е']; }
+    else f = [w, st + 'и', st + 'е', st + 'ю', st + 'ей', st + 'е'];
+  } else if (g === 'м') {
+    if (L === 'й') { f = [w, st + 'я', st + 'ю', null, st + 'ем', st + (w.endsWith('ий') ? 'и' : 'е')]; f[3] = an ? f[1] : w; }
+    else if (L === 'ь') { f = [w, st + 'я', st + 'ю', null, st + 'ем', st + 'е']; f[3] = an ? f[1] : w; }
+    else if ('аеёиоуыэюя'.includes(L)) return null;
+    else { f = [w, w + 'а', w + 'у', null, w + 'ом', w + 'е']; f[3] = an ? f[1] : w; }
+  } else if (g === 'ж') { if (L === 'ь') f = [w, st + 'и', st + 'и', w, st + 'ью', st + 'и']; else return null; }
+  else if (g === 'с') {
+    if (w.endsWith('ие')) f = [w, st + 'я', st + 'ю', w, st + 'ем', st + 'и'];
+    else if (L === 'о') f = [w, st + 'а', st + 'у', w, st + 'ом', st + 'е'];
+    else if (L === 'е') f = [w, st + 'я', st + 'ю', w, st + 'ем', st + 'е'];
+    else return null;
+  }
+  return f;
+}
+function adjForms(adj, an) {
+  const a = adj.trim().toLowerCase(), E = a.slice(-2), s = a.slice(0, -2), sv = /[жшчщгкх]$/.test(s);
+  if (E === 'ый' || E === 'ой') { const f = [a, s + 'ого', s + 'ому', null, s + (sv ? 'им' : 'ым'), s + 'ом']; f[3] = an ? f[1] : a; return f; }
+  if (E === 'ий') { const h = /[кгх]$/.test(s); const f = [a, s + (h ? 'ого' : 'его'), s + (h ? 'ому' : 'ему'), null, s + 'им', s + (h ? 'ом' : 'ем')]; f[3] = an ? f[1] : a; return f; }
+  if (E === 'ая') return [a, s + 'ой', s + 'ой', s + 'ую', s + 'ой', s + 'ой'];
+  if (E === 'яя') return [a, s + 'ей', s + 'ей', s + 'юю', s + 'ей', s + 'ей'];
+  if (E === 'ое') return [a, s + 'ого', s + 'ому', a, s + (sv ? 'им' : 'ым'), s + 'ом'];
+  if (E === 'ее') return [a, s + 'его', s + 'ему', a, s + 'им', s + 'ем'];
+  return null;
+}
+const phraseRaw = (adj, noun, g, an) => { const a = adjForms(adj, an), n = nounForms(noun, g, an); return a && n ? a.map((x, i) => x + ' ' + n[i]) : null; };
+const nounFull = (noun, g, an) => withPrep(nounForms(noun, g, an));
+const phraseFull = (adj, noun, g, an) => withPrep(phraseRaw(adj, noun, g, an));
+function hl(base, form) {           // подчёркнуть окончания
+  const bw = base.split(' '), fw = form.split(' ');
+  return fw.map((w, k) => { const b = bw[bw.length - fw.length + k] || bw[k] || ''; let i = 0; while (i < w.length && i < b.length && w[i] === b[i]) i++; return w.slice(0, i) + (i < w.length ? `<em>${w.slice(i)}</em>` : ''); }).join(' ');
+}
+
+/* ================= СОДЕРЖАНИЕ ================= */
+const CASES = {
+  'И': { abbr:'И.п.', name:'именительный', q:'кто? что?', helper:'есть' },
+  'Р': { abbr:'Р.п.', name:'родительный',  q:'кого? чего?', helper:'нет' },
+  'Д': { abbr:'Д.п.', name:'дательный',    q:'кому? чему?', helper:'дать' },
+  'В': { abbr:'В.п.', name:'винительный',  q:'кого? что?', helper:'вижу' },
+  'Т': { abbr:'Т.п.', name:'творительный', q:'кем? чем?', helper:'горжусь' },
+  'П': { abbr:'П.п.', name:'предложный',   q:'о ком? о чём?', helper:'думаю' }
+};
+const ORDER = ['И', 'Р', 'Д', 'В', 'Т', 'П'];
+const BYABBR = {}; ORDER.forEach(c => BYABBR[CASES[c].abbr] = c);
+const MNEMO = 'Иван Родил Девчонку, Велел Тащить Пелёнку';
+const O = (arr, kind) => arr.map(x => typeof x === 'string' ? { text:x, kind } : x);
+const optQ = (c, n = 4) => O(shuffle([CASES[c].q, ...shuffle(ORDER.filter(x => x !== c)).slice(0, n - 1).map(x => CASES[x].q)]), 'q');
+const optC = (c, n = 4) => O(shuffle([c, ...shuffle(ORDER.filter(x => x !== c)).slice(0, n - 1)]).map(x => CASES[x].abbr), 'case');
+const optAll = () => O(ORDER.map(c => CASES[c].abbr), 'case');
+const ADJQ = { 'И':['какой?','какая?','какое?'], 'Р':['какого?','какой?','какого?'], 'Д':['какому?','какой?','какому?'],
+  'В':['какой? / какого?','какую?','какое?'], 'Т':['каким?','какой?','каким?'], 'П':['о каком?','о какой?','о каком?'] };
+const GI = { 'м':0, 'ж':1, 'с':2 };
+const optAdjQ = (c, n = 4) => O(shuffle([c, ...shuffle(ORDER.filter(x => x !== c)).slice(0, n - 1)]).map(x => ADJQ[x].join('|')), 'adjq');
+const helperPhrase = c => `${CASES[c].helper} (${CASES[c].q})`;
+const autoHint = c => `Вспомни вопрос ${CASES[c].abbr}: ${CASES[c].q} Слово-помощник: «${helperPhrase(c)}».`;
+const SPECHINT = 'Задай вопрос от главного слова в предложении к нужному слову.';
+
+/* --- фабрики заданий --- */
+function ch(o) { return Object.assign({ type:'choice' }, o); }
+function insertTask(s, word, opts, ans, c, prompt = 'ВСТАВЬ ФОРМУ') {
+  return ch({ prompt, note:word ? `Исходное слово: ${word}` : '', s, mode:'blank', marks:[''], fix:[ans], big:'', subs:[{ ask:'Выбери правильную форму', opts:O(shuffle(opts), 'word'), ans }], hint:autoHint(c) });
+}
+function fixTask(s, wrong, ans, opts, c, prompt = 'НАЙДИ ОШИБКУ И ИСПРАВЬ ЕЁ') {
+  return ch({ prompt, s, mode:'wrong', marks:[wrong], fix:[ans], subs:[{ ask:'Как правильно?', opts:O(shuffle(opts), 'word'), ans }], hint:autoHint(c) });
+}
+function markTask(s, word, c, prompt, ask, hint) {
+  return ch({ prompt, s, mode:'mark', marks:[word], subs:[{ ask, opts:optC(c), ans:CASES[c].abbr }], hint:hint || `Найди слово, от которого зависит «${word}», и задай вопрос.` });
+}
+function declineSort(title, forms, hint, gi) {
+  const full = withPrep(forms);
+  return { type:'sort', mode:'single', layout:'pairs', prompt:'ПРОСКЛОНЯЙ ' + (gi != null ? 'СЛОВОСОЧЕТАНИЕ' : 'СЛОВО'), big:title.toUpperCase(),
+    targets:ORDER.map((c, i) => ({ id:c, label:CASES[c].abbr, sub:`${CASES[c].q}${gi != null ? '<br>' + ADJQ[c][gi] : ''}<br>помощник: ${CASES[c].helper}`, ans:full[i] })),
+    cards:shuffle(full.map(f => ({ text:f }))), done:'Все формы на своих местах!', hint:hint || `Идём по порядку: ${MNEMO}. У каждого падежа свой вопрос и слово-помощник.` };
+}
+function chainTask(word, g, an, c) {
+  const i = ORDER.indexOf(c), forms = nounFull(word, g, an), q = CASES[c].q, f = forms[i];
+  const dq = shuffle(ORDER.filter(x => x !== c)).slice(0, 3).map(x => CASES[x].q);
+  const df = shuffle([...new Set(forms.filter(x => x !== f))]).slice(0, 3);
+  return { type:'sort', mode:'single', layout:'chain', prompt:'ПАДЕЖ → ВОПРОС → ФОРМА', big:word.toUpperCase(),
+    targets:[{ fixed:`<b>${CASES[c].abbr}</b><small>${CASES[c].name} · ${CASES[c].helper}</small>` }, { arrow:1 }, { id:'q', label:'вопрос', ans:q, kind:'q' }, { arrow:1 }, { id:'f', label:'форма слова', ans:f }],
+    cards:shuffle([{ text:q, kind:'q' }, { text:f }, ...dq.map(t => ({ text:t, kind:'q' })), ...df.map(t => ({ text:t }))]),
+    done:'Цепочка собрана!', hint:autoHint(c) };
+}
+function buildTask(adj, noun, g, c) {
+  const i = ORDER.indexOf(c), a = adjForms(adj, false), n = nounForms(noun, g, false);
+  const da = shuffle([...new Set(a.filter(x => x !== a[i]))]).slice(0, 2), dn = shuffle([...new Set(n.filter(x => x !== n[i]))]).slice(0, 2);
+  const t = [{ fixed:`<b>${CASES[c].abbr}</b><small>${CASES[c].q} · ${CASES[c].helper}</small>` }];
+  if (c === 'П') t.push({ fixed:prefO(a[i]) });
+  t.push({ id:'a', label:'прилагательное', ans:a[i] }, { id:'n', label:'существительное', ans:n[i] });
+  return { type:'sort', mode:'single', layout:'row', prompt:'СОБЕРИ СЛОВОСОЧЕТАНИЕ', big:`${adj} ${noun}`.toUpperCase(),
+    targets:t, cards:shuffle([...[a[i], n[i], ...da, ...dn].map(x => ({ text:x }))]), done:'Словосочетание собрано!', hint:autoHint(c) };
+}
+const phraseSort = (adj, noun, g) => declineSort(`${adj} ${noun}`, phraseRaw(adj, noun, g, false), `Прилагательное и существительное стоят в одном падеже. Смотри на вопрос существительного и прилагательного.`, GI[g]);
+
+/* --- уровни и этапы --- */
+const LV = [
+{ id:1, em:'🔵', c:'--l1', name:'УЧИМ ПАДЕЖИ', short:'УЧИМ ПАДЕЖИ', desc:'Запомни названия падежей, их вопросы и слова-помощники.', intro:{ type:'cases', title:'Падеж — вопрос — слово-помощник' }, stages:[
+  { t:'СОБЕРИ ПАДЕЖИ ПО ПОРЯДКУ', d:'Перетащи карточки на свои места', make:() => [{
+      type:'sort', mode:'single', layout:'order', prompt:'Расставь падежи по порядку.',
+      targets:ORDER.map((c, i) => ({ id:c, label:String(i + 1), ans:CASES[c].abbr })),
+      cards:shuffle(ORDER.map(c => ({ text:CASES[c].abbr, label:`<b>${CASES[c].abbr}</b><small>${CASES[c].name}</small>` }))),
+      done:'Отлично! Падежи стоят по порядку!', hint:`Запомни фразу: «${MNEMO}». Первые буквы — это падежи по порядку.` }] },
+  { t:'СОЕДИНИ ПАДЕЖ И ВОПРОС', d:'Перетащи вопрос к падежу', make:() => [{
+      type:'sort', mode:'single', layout:'pairs', prompt:'Соедини падеж и вопрос.',
+      targets:ORDER.map(c => ({ id:c, label:CASES[c].abbr, sub:CASES[c].name, ans:CASES[c].q })),
+      cards:shuffle(ORDER.map(c => ({ text:CASES[c].q, kind:'q' }))), done:'Все пары найдены!',
+      hint:'Вспомни: Р.п. — кого? чего?, В.п. — кого? что?. Они похожи, но различаются.' }] },
+  { t:'НАЙДИ ВОПРОС', d:'Выбери вопрос к падежу', make:() => shuffle(ORDER).map(c => ch({ prompt:'НАЙДИ ВОПРОС',
+      big:`${CASES[c].abbr}<small>${cap(CASES[c].name)} падеж</small>`, subs:[{ ask:'Какой вопрос у этого падежа?', opts:optQ(c), ans:CASES[c].q }],
+      hint:`Это ${ORDER.indexOf(c) + 1}-й падеж. «${MNEMO}» — найди его по порядку.` })) },
+  { t:'НАЙДИ ПАДЕЖ', d:'По вопросу назови падеж', make:() => shuffle(ORDER).map(c => ch({ prompt:'НАЙДИ ПАДЕЖ',
+      big:CASES[c].q.toUpperCase(), subs:[{ ask:'Какой это падеж?', opts:optC(c), ans:CASES[c].abbr }],
+      hint:`Пройди по порядку: «${MNEMO}» — у каждого падежа свои вопросы.` })) },
+  { t:'ПАДЕЖНЫЙ ПОРЯДОК', d:'Какой падеж по счёту?', make:() => shuffle(ORDER).map(c => {
+      const n = ORDER.indexOf(c) + 1, others = shuffle([1, 2, 3, 4, 5, 6].filter(x => x !== n)).slice(0, 3);
+      return ch({ prompt:'ПАДЕЖНЫЙ ПОРЯДОК', big:`${cap(CASES[c].name)} падеж`, subs:[{ ask:`Какой по счёту ${cap(CASES[c].name.replace('ый', 'ый'))} падеж?`, opts:O(shuffle([n, ...others]).map(String), 'word'), ans:String(n) }],
+        hint:`Скажи падежи по порядку: «${MNEMO}».` }); }) },
+  { t:'СЛОВА-ПОМОЩНИКИ', d:'Есть, нет, дать, вижу, горжусь, думаю', make:() => [{
+      type:'sort', mode:'single', layout:'pairs', prompt:'Соедини падеж и слово-помощник.',
+      targets:ORDER.map(c => ({ id:c, label:CASES[c].abbr, sub:CASES[c].q, ans:CASES[c].helper })),
+      cards:shuffle(ORDER.map(c => ({ text:CASES[c].helper }))), done:'Все помощники нашли свои падежи!',
+      hint:'Подставь помощника к вопросу: нет (кого? чего?), горжусь (кем? чем?), думаю (о ком? о чём?).' },
+      ...shuffle(ORDER).slice(0, 4).map(c => ch({ prompt:'СЛОВО-ПОМОЩНИК', big:CASES[c].helper.toUpperCase(), subs:[{ ask:'К какому падежу относится это слово?', opts:optC(c), ans:CASES[c].abbr }],
+        hint:`Скажи слово с вопросом: «${helperPhrase(c)}». Найди такой вопрос в таблице падежей.` }))] }
+]},
+{ id:2, em:'🟢', c:'--l2', name:'СКЛОНЯЕМ СУЩЕСТВИТЕЛЬНЫЕ', short:'СУЩЕСТВИТЕЛЬНЫЕ', desc:'Научись изменять слово по падежам.', stages:[
+  { t:'ОПРЕДЕЛИ РОД', d:'Он, она или оно?', make:() => {
+      const W = [['стол','м'],['дом','м'],['карандаш','м'],['учитель','м'],['книга','ж'],['школа','ж'],['тетрадь','ж'],['берёза','ж'],['окно','с'],['море','с'],['яблоко','с']];
+      return [{ type:'sort', mode:'cat', layout:'cats', prompt:'Перетащи слова в нужный род.',
+        targets:[{ id:'м', label:'👦 МУЖСКОЙ РОД' }, { id:'ж', label:'👧 ЖЕНСКИЙ РОД' }, { id:'с', label:'🟦 СРЕДНИЙ РОД' }],
+        cards:shuffle(W.map(([w, g]) => ({ text:w, to:g }))), done:'Все слова распределены!', hint:'Подставь слова: он (мой), она (моя), оно (моё). Например: «мой стол» — мужской род.' }]; } },
+  { t:'ПРОСКЛОНЯЙ СЛОВО', d:'Стол, книга, окно', make:() => [
+      declineSort('стол', nounForms('стол', 'м', false)), declineSort('книга', nounForms('книга', 'ж', false)), declineSort('окно', nounForms('окно', 'с', false))] },
+  { t:'ПАДЕЖ → ВОПРОС → ФОРМА', d:'Собери цепочку', make:() => shuffle([chainTask('стол', 'м', false, 'Д'), chainTask('книга', 'ж', false, 'Т'), chainTask('школа', 'ж', false, 'П'), chainTask('окно', 'с', false, 'Р'), chainTask('тетрадь', 'ж', false, 'В')]) },
+  { t:'ВСТАВЬ ФОРМУ', d:'Подбери форму слова', make:() => shuffle([
+      insertTask('Я подошёл к {}.', 'СТОЛ', ['стол','стола','столу','столом'], 'столу', 'Д'),
+      insertTask('На {} лежит книга.', 'СТОЛ', ['стол','столу','столе','столом'], 'столе', 'П'),
+      insertTask('Мама читает {}.', 'КНИГА', ['книга','книги','книгу','книгой'], 'книгу', 'В'),
+      insertTask('Дети рисуют {}.', 'КАРАНДАШ', ['карандаш','карандаша','карандашу','карандашом'], 'карандашом', 'Т'),
+      insertTask('Мы идём в {}.', 'ШКОЛА', ['школа','школы','школу','школой'], 'школу', 'В'),
+      insertTask('В сумке нет {}.', 'ТЕТРАДЬ', ['тетрадь','тетради','тетрадью'], 'тетради', 'Р'),
+      insertTask('Я смотрю в {}.', 'ОКНО', ['окно','окна','окну','окном'], 'окно', 'В')]) },
+  { t:'НАЙДИ ОШИБКУ', d:'Исправь слово', make:() => shuffle([
+      fixTask('Я подошёл к {}.', 'стол', 'столу', ['столу','стола','столом'], 'Д'),
+      fixTask('Мама читает {}.', 'книга', 'книгу', ['книгу','книги','книге'], 'В'),
+      fixTask('Дети рисуют {}.', 'карандаш', 'карандашом', ['карандашом','карандаша','карандашу'], 'Т'),
+      fixTask('Мы говорим о {}.', 'школа', 'школе', ['школе','школы','школу'], 'П'),
+      fixTask('В сумке нет {}.', 'тетрадь', 'тетради', ['тетради','тетрадью'], 'Р'),
+      fixTask('Птица сидит на {}.', 'ветка', 'ветке', ['ветке','ветки','веткой'], 'П')]) }
+]},
+{ id:3, em:'🟡', c:'--l3', name:'ПАДЕЖИ ПРИЛАГАТЕЛЬНЫХ', short:'ПРИЛАГАТЕЛЬНЫЕ', desc:'У прилагательных тоже есть вопросы по падежам. Они меняются вместе с существительным.',
+  intro:{ type:'adj', title:'Прилагательное изменяется по падежам вместе с существительным.', adj:'новый', noun:'дом', g:'м' }, stages:[
+  { t:'ВОПРОСЫ ПРИЛАГАТЕЛЬНЫХ', d:'Расставь вопросы по падежам', make:() => [{
+      type:'sort', mode:'single', layout:'pairs', prompt:'Расставь вопросы прилагательных по падежам.',
+      targets:ORDER.map(c => ({ id:c, label:CASES[c].abbr, sub:`${CASES[c].q}<br>помощник: ${CASES[c].helper}`, ans:ADJQ[c].join('|') })),
+      cards:shuffle(ORDER.map(c => ({ text:ADJQ[c].join('|'), kind:'q', label:ADJQ[c].map(x => `<span>${x}</span>`).join('') }))),
+      done:'Все вопросы прилагательных на местах!',
+      hint:'Вопрос прилагательного похож на вопрос существительного: кого? → какого?, кому? → какому?, кем? → каким?, о ком? → о каком?' }] },
+  { t:'НАЙДИ ВОПРОС ПРИЛАГАТЕЛЬНОГО', d:'Выбери вопросы к падежу', make:() => shuffle(ORDER).map(c => ch({ prompt:'ВОПРОС ПРИЛАГАТЕЛЬНОГО',
+      big:`${CASES[c].abbr}<small>${cap(CASES[c].name)} падеж · ${CASES[c].helper}</small>`, subs:[{ ask:'Какие вопросы у прилагательного в этом падеже?', opts:optAdjQ(c), ans:ADJQ[c].join('|') }],
+      hint:`Вопрос существительного: ${CASES[c].q} Прилагательное спрашивает похоже, но со словом «какой».` })) },
+  { t:'ПО ВОПРОСУ НАЙДИ ПАДЕЖ', d:'Вопросы прилагательного → падеж', make:() => shuffle(ORDER).map(c => ch({ prompt:'ПО ВОПРОСУ НАЙДИ ПАДЕЖ',
+      big:ADJQ[c].join('<br>'), subs:[{ ask:'Какой это падеж?', opts:optC(c), ans:CASES[c].abbr }],
+      hint:`Подставь слово-помощник к существительному: «${helperPhrase(c)}». Вопросы прилагательного похожи.` })) },
+  { t:'ВОПРОС К ПРИЛАГАТЕЛЬНОМУ', d:'Задай вопрос к выделенному слову', make:() => shuffle([
+      ['Мы гордимся {} домом.', 'новым', 'каким?', 'Т'], ['Я читаю {} книгу.', 'интересную', 'какую?', 'В'], ['Нет {} дома.', 'нового', 'какого?', 'Р'],
+      ['Мы говорим о {} доме.', 'большом', 'о каком?', 'П'], ['Я иду к {} дому.', 'высокому', 'какому?', 'Д'], ['{} дом стоит у реки.', 'Новый', 'какой?', 'И']
+    ].map(([s, w, a, c]) => { const pool = ['какой?', 'какого?', 'какому?', 'каким?', 'о каком?', 'какую?', 'какая?'].filter(x => x !== a);
+      return ch({ prompt:'ВОПРОС К ПРИЛАГАТЕЛЬНОМУ', s, mode:'mark', marks:[w], subs:[{ ask:`Какой вопрос у слова «${w}»?`, opts:O(shuffle([a, ...shuffle(pool).slice(0, 3)]), 'word'), ans:a }],
+        hint:`Вопрос существительного: ${CASES[c].q} Прилагательное спрашивает похоже, со словом «какой».` }); })) },
+  { t:'ПРОСКЛОНЯЙ СЛОВОСОЧЕТАНИЕ', d:'Новый дом, красивая книга, большое окно', make:() => [phraseSort('новый', 'дом', 'м'), phraseSort('красивая', 'книга', 'ж'), phraseSort('большое', 'окно', 'с')] },
+  { t:'ВЫБЕРИ ПРАВИЛЬНУЮ ФОРМУ', d:'Подбери форму прилагательного', make:() => shuffle([
+      ['Нет {} дома.', 'Р', ['новый','нового','новому','новым'], 'нового', 0],
+      ['Мы идём к {} школе.', 'Д', ['новая','новой','новую','новым'], 'новой', 1],
+      ['Мы любуемся {} домом.', 'Т', ['красивый','красивого','красивому','красивым'], 'красивым', 0],
+      ['Я читаю {} книгу.', 'В', ['интересная','интересной','интересную','интересным'], 'интересную', 1],
+      ['Мы говорим о {} окне.', 'П', ['большое','большого','большом','большим'], 'большом', 2],
+      ['На столе лежит {} книга.', 'И', ['новая','новой','новую','новым'], 'новая', 1]
+    ].map(([s, c, o, a, gi]) => { const t = insertTask(s, '', o, a, c, 'ВЫБЕРИ ПРАВИЛЬНУЮ ФОРМУ'); t.big = CASES[c].abbr; t.hint += ` Вопрос прилагательного: ${ADJQ[c][gi]}`; return t; })) },
+  { t:'ПАДЕЖ ПРИЛАГАТЕЛЬНОГО', d:'Определи падеж слова', make:() => shuffle([
+      ['Мы гордимся {} домом.', 'новым', 'Т'], ['Я читаю {} книгу.', 'интересную', 'В'], ['Нет {} книги.', 'красивой', 'Р'],
+      ['Мы говорим о {} доме.', 'большом', 'П'], ['Папа дал подарок {} сестре.', 'младшей', 'Д'], ['{} дом стоит у реки.', 'Новый', 'И']
+    ].map(([s, w, c]) => markTask(s, w, c, 'ПАДЕЖ ПРИЛАГАТЕЛЬНОГО', `Определи падеж слова «${w}»`, `Найди существительное, к которому относится «${w}». Подставь слово-помощник и вопросы: у прилагательного они похожи.`))) },
+  { t:'ИСПРАВЬ ОШИБКУ', d:'Выбери правильное словосочетание', make:() => shuffle([
+      ['Я подошёл {}.', 'к новая школа', 'к новой школе', ['к новой школе','к новую школу','к новым школе'], 'Д'],
+      ['Мама читает {}.', 'интересной книга', 'интересную книгу', ['интересную книгу','интересной книге','интересная книга'], 'В'],
+      ['Вокруг {} растёт сад.', 'новый дом', 'нового дома', ['нового дома','новому дому','новым домом'], 'Р'],
+      ['Дети играют с {}.', 'большая мяч', 'большим мячом', ['большим мячом','большого мяча','большой мяч'], 'Т'],
+      ['Мы говорим о {}.', 'красивый окне', 'красивом окне', ['красивом окне','красивым окном','красивого окна'], 'П']
+    ].map(([s, w, a, o, c]) => fixTask(s, w, a, o, c, 'ИСПРАВЬ ОШИБКУ'))) }
+]},
+{ id:4, em:'🟠', c:'--l4', name:'СЛОВОСОЧЕТАНИЯ', short:'СЛОВОСОЧЕТАНИЯ', desc:'Существительное и прилагательное изменяются вместе.',
+  intro:{ title:'Теперь существительное и прилагательное изменяются вместе.', adj:'высокий', noun:'дом', g:'м' }, stages:[
+  { t:'ПРОСКЛОНЯЙ СЛОВОСОЧЕТАНИЕ', d:'Высокий дом, зелёная трава, синее море', make:() => [phraseSort('высокий', 'дом', 'м'), phraseSort('зелёная', 'трава', 'ж'), phraseSort('синее', 'море', 'с')] },
+  { t:'СОБЕРИ СЛОВОСОЧЕТАНИЕ', d:'Подбери оба слова', make:() => shuffle([buildTask('высокий', 'дом', 'м', 'Т'), buildTask('зелёная', 'трава', 'ж', 'Р'), buildTask('синее', 'море', 'с', 'Д'), buildTask('высокий', 'дом', 'м', 'П'), buildTask('зелёная', 'трава', 'ж', 'В')]) },
+  { t:'ВСТАВЬ СЛОВОСОЧЕТАНИЕ', d:'Подбери форму для предложения', make:() => shuffle([
+      ['Мы живём в {}.', 'высоком доме', ['высокий дом','высокого дома','высоком доме','высокому дому'], 'П'],
+      ['Дети радуются {}.', 'тёплому лету', ['тёплое лето','тёплого лета','тёплому лету','тёплым летом'], 'Д'],
+      ['Мама купила {}.', 'свежий хлеб', ['свежий хлеб','свежего хлеба','свежему хлебу','свежим хлебом'], 'В'],
+      ['Бабушка гордится {}.', 'умной внучкой', ['умная внучка','умной внучки','умной внучке','умной внучкой'], 'Т'],
+      ['У {} стоит дом.', 'широкой реки', ['широкая река','широкой реки','широкую реку','широкой рекой'], 'Р'],
+      ['{} светит.', 'Яркое солнце', ['Яркое солнце','Яркого солнца','Яркому солнцу','Ярким солнцем'], 'И']
+    ].map(([s, a, o, c]) => insertTask(s, '', o, a, c, 'ВСТАВЬ СЛОВОСОЧЕТАНИЕ'))) },
+  { t:'НАЙДИ ПАДЕЖ СЛОВОСОЧЕТАНИЯ', d:'Определи падеж', make:() => shuffle([
+      ['Мы идём по {}.', 'широкой дороге', 'Д'], ['Я рисую {}.', 'красный цветок', 'В'], ['Мальчик пишет {}.', 'новой ручкой', 'Т'],
+      ['В {} живёт лиса.', 'тёмном лесу', 'П'], ['Нет {}.', 'свежего молока', 'Р'], ['{} светит.', 'Яркое солнце', 'И']
+    ].map(([s, w, c]) => markTask(s, w, c, 'НАЙДИ ПАДЕЖ СЛОВОСОЧЕТАНИЯ', 'Какой падеж у выделенного словосочетания?', 'Задай вопрос от главного слова к выделенному словосочетанию.'))) },
+  { t:'ИСПРАВЬ ОШИБКУ', d:'Выбери правильное словосочетание', make:() => shuffle([
+      ['Мы идём {}.', 'к высокий дом', 'к высокому дому', ['к высокому дому','к высокого дома','к высоким домом'], 'Д'],
+      ['Я пишу {}.', 'красивая ручкой', 'красивой ручкой', ['красивой ручкой','красивую ручку','красивая ручка'], 'Т'],
+      ['Нет {}.', 'свежий хлеба', 'свежего хлеба', ['свежего хлеба','свежему хлебу','свежим хлебом'], 'Р'],
+      ['Дети любуются {}.', 'синий морем', 'синим морем', ['синим морем','синего моря','синее море'], 'Т'],
+      ['Мы говорим {}.', 'о тёплое лето', 'о тёплом лете', ['о тёплом лете','о тёплым летом','о тёплого лета'], 'П']
+    ].map(([s, w, a, o, c]) => fixTask(s, w, a, o, c, 'ИСПРАВЬ ОШИБКУ'))) }
+]},
+{ id:5, em:'🔴', c:'--l5', name:'ПАДЕЖНЫЙ ДЕТЕКТИВ', short:'ПАДЕЖНЫЙ ДЕТЕКТИВ', desc:'Найди слово, задай вопрос, определи падеж. Предлоги — твои помощники!',
+  stages:[
+  { t:'ЗАДАЙ ВОПРОС К СЛОВУ', d:'Улика: вопрос', make:() => shuffle([
+      ['Мама пишет {}.', 'ручкой', 'Т'], ['Я вижу {}.', 'кошку', 'В'], ['Мы говорим о {}.', 'школе', 'П'],
+      ['Нет {}.', 'молока', 'Р'], ['Я помогаю {}.', 'папе', 'Д'], ['{} светит.', 'Солнце', 'И']
+    ].map(([s, w, c], i) => ch({ prompt:`🔍 ДЕЛО №${i + 1}: ЗАДАЙ ВОПРОС`, s, mode:'mark', marks:[w], subs:[{ ask:'Какой вопрос у выделенного слова?', opts:optQ(c), ans:CASES[c].q }], hint:'Поставь вопрос от главного слова в предложении к выделенному слову.' }))) },
+  { t:'ОПРЕДЕЛИ ПАДЕЖ', d:'Улика: падеж', make:() => shuffle([
+      ['{} спит.', 'Кошка', 'И'], ['Нет {}.', 'хлеба', 'Р'], ['Я иду к {}.', 'школе', 'Д'], ['Мама купила {}.', 'молоко', 'В'], ['Он гордится {}.', 'сыном', 'Т'],
+      ['Книга лежит на {}.', 'столе', 'П'], ['Дети рисуют {}.', 'карандашом', 'Т'], ['Я помогаю {}.', 'бабушке', 'Д'], ['Мы ждём {}.', 'автобус', 'В'],
+      ['У {} растёт ива.', 'реки', 'Р'], ['Мы мечтаем о {}.', 'лете', 'П'], ['В саду растёт {}.', 'яблоня', 'И']
+    ]).slice(0, 8).map(([s, w, c], i) => ch({ prompt:`🔍 ДЕЛО №${i + 1}: ОПРЕДЕЛИ ПАДЕЖ`, s, mode:'mark', marks:[w], subs:[{ ask:'Какой падеж у выделенного слова?', opts:optAll(), ans:CASES[c].abbr }], hint:`Задай вопрос к слову «${w}» и найди его в таблице падежей.` })) },
+  { t:'ПРЕДЛОГИ-ПОМОЩНИКИ', d:'Каждый предлог — к своему падежу', make:() => [{
+      type:'sort', mode:'cat', layout:'cats', prompt:'Раздай предлоги по падежам.',
+      targets:['Р','Д','В','Т','П'].map(c => ({ id:c, label:`${CASES[c].abbr}<small>${CASES[c].q}</small>` })),
+      cards:shuffle([['у','Р'],['без','Р'],['от','Р'],['к','Д'],['по','Д'],['про','В'],['через','В'],['над','Т'],['под','Т'],['о','П'],['при','П']].map(([w, c]) => ({ text:w, to:c }))),
+      done:'Все предлоги на местах!', hint:'Подставь вопрос: у (кого? чего?), к (кому? чему?), про (кого? что?), над (кем? чем?), о (ком? чём?).' }] },
+  { t:'ДВА ПОДОЗРЕВАЕМЫХ', d:'Найди падеж двух слов', make:() => shuffle([
+      ['{} пишет {}.', ['Мама', 'ручкой'], ['И', 'Т']], ['{} идут к {}.', ['Дети', 'школе'], ['И', 'Д']], ['{} читает {}.', ['Папа', 'книгу'], ['И', 'В']],
+      ['{} говорит о {}.', ['Девочка', 'лете'], ['И', 'П']], ['{} дал {} книгу.', ['Брат', 'Лене'], ['И', 'Д']]
+    ]).map(([s, ws, cs], i) => ch({ prompt:`🔍 ДЕЛО №${i + 1}: ДВА СЛОВА`, s, mode:'mark', marks:ws,
+      subs:ws.map((w, k) => ({ ask:`Какой падеж у слова «${w}»?`, opts:optAll(), ans:CASES[cs[k]].abbr })), hint:'Для каждого слова задай свой вопрос: кто? что? делает — и к кому? чему? чем?' })) }
+]},
+{ id:6, em:'🟣', c:'--l6', name:'МОЯ ПРАКТИКА', short:'МОЯ ПРАКТИКА', desc:'Введи своё слово — и тренируйся с ним.', own:true, stages:[
+  { t:'РАССТАВЬ ФОРМЫ', d:'Перетащи формы слова по падежам' }, { t:'МОЁ ПРЕДЛОЖЕНИЕ', d:'Составь предложение и найди падеж' }, { t:'КАКОЙ ПАДЕЖ?', d:'Угадай падеж формы слова' } ]},
+{ id:7, em:'🧩', c:'--l7', name:'ТРЕНАЖЁР СКЛОНЕНИЯ', short:'ТРЕНАЖЁР СКЛОНЕНИЯ', desc:'Впиши своё слово — его формы появятся вразброс. Расставь их по падежам с вопросами!', stages:[
+  { t:'СКЛОНЯЙ СВОИ СЛОВА', d:'Три слова: впиши слово и расставь формы', make:() => [1, 2, 3].map(n => ({ type:'own', prompt:`ТРЕНАЖЁР СКЛОНЕНИЯ · слово ${n} из 3`,
+      hint:'Впиши слово и нажми «Склонять». Потом перетащи формы к падежам. Помощники: есть, нет, дать, вижу, горжусь, думаю.' })) } ]}
+];
+const TOTAL_STAGES = LV.reduce((n, l) => n + l.stages.length, 0);
+
+/* ================= СОСТОЯНИЕ И ЭФФЕКТЫ ================= */
+const G = { duel:false, streak:0, lv:0, si:0, stage:null, tasks:[], ti:0, mist:0, locked:false, run:null, marathon:false, own:null, timers:[] };
+const later = (fn, ms) => { const id = setTimeout(fn, ms); G.timers.push(id); return id; };
+const clearTimers = () => { G.timers.forEach(clearTimeout); G.timers = []; };
+const canAnim = typeof Element !== 'undefined' && typeof Element.prototype.animate === 'function';
+const reduce = () => window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+function updateStars(pop) { $('#starCount').textContent = P.stars; if (pop) { const c = $('#starCounter'); c.classList.remove('pop'); void c.offsetWidth; c.classList.add('pop'); } }
+const updateStreak = () => { $('#streakCount').textContent = G.streak; };
+function toast(text, kind) { const t = $('#toast'); t.className = 'toast ' + kind; t.textContent = text; void t.offsetWidth; t.classList.add('show'); }
+function banner(text) { const b = $('#banner'); b.className = 'banner'; b.textContent = text; void b.offsetWidth; b.classList.add('show'); }
+function sparkle(x, y, n = 7) {
+  if (reduce() || !canAnim) return;
+  for (let i = 0; i < n; i++) {
+    const s = document.createElement('div'); s.className = 'fx'; s.textContent = '✨';
+    s.style.left = (x - 17) + 'px'; s.style.top = (y - 17) + 'px'; s.style.fontSize = (16 + Math.random() * 14) + 'px'; document.body.appendChild(s);
+    const a = Math.random() * Math.PI * 2, d = 40 + Math.random() * 50;
+    s.animate([{ transform:'translate(0,0) scale(.3)', opacity:1 }, { transform:`translate(${Math.cos(a) * d}px,${Math.sin(a) * d}px) scale(1.2)`, opacity:0 }], { duration:700 + Math.random() * 300, easing:'ease-out', fill:'forwards' }).onfinish = () => s.remove();
+  }
+}
+function rewardStar(x, y) {
+  const s = document.createElement('div'); s.className = 'fx'; s.textContent = '⭐'; s.style.left = (x - 17) + 'px'; s.style.top = (y - 17) + 'px'; document.body.appendChild(s);
+  const finish = () => { s.remove(); P.stars++; saveP(); updateStars(true); Snd.playStar(); };
+  if (!canAnim) { finish(); return; }
+  s.animate([{ transform:'scale(0) rotate(-40deg)', opacity:0 }, { transform:'scale(1.6) rotate(0)', opacity:1 }], { duration:260, easing:'ease-out', fill:'forwards' });
+  later(() => { s.textContent = '✨'; }, 320);
+  later(() => {
+    s.textContent = '⭐';
+    const r = $('#starCounter').getBoundingClientRect(), dx = r.left + r.width / 2 - x, dy = r.top + r.height / 2 - y;
+    s.animate([{ transform:'translate(0,0) scale(1.6)' }, { transform:`translate(${dx}px,${dy}px) scale(.6)` }], { duration:650, easing:'cubic-bezier(.5,0,.3,1)', fill:'forwards' }).onfinish = finish;
+  }, 650);
+}
+function starBurst(n = 22) {
+  if (!canAnim) return;
+  if (reduce()) n = 8;
+  const cx = innerWidth / 2, cy = innerHeight * 0.3;
+  for (let i = 0; i < n; i++) {
+    const s = document.createElement('div'); s.className = 'fx'; s.textContent = '⭐'; s.style.left = (cx - 17) + 'px'; s.style.top = (cy - 17) + 'px'; document.body.appendChild(s);
+    const a = Math.random() * Math.PI * 2, d = 90 + Math.random() * Math.min(240, innerWidth * 0.5);
+    s.animate([{ transform:'translate(0,0) scale(0)', opacity:1 }, { transform:`translate(${Math.cos(a) * d}px,${Math.sin(a) * d}px) scale(${0.8 + Math.random()}) rotate(${Math.random() * 360}deg)`, opacity:1, offset:.7 }, { transform:`translate(${Math.cos(a) * d}px,${Math.sin(a) * d + 60}px) scale(.4)`, opacity:0 }], { duration:1300 + Math.random() * 500, delay:Math.random() * 300, easing:'ease-out', fill:'forwards' }).onfinish = () => s.remove();
+  }
+}
+const cv = $('#confetti'), cx2 = cv.getContext ? cv.getContext('2d') : null;
+let parts = [], raf = 0;
+const COLORS = ['#ffd860', '#6fd9a0', '#7bb8ff', '#ff8591', '#b79cff', '#ffaa5c'];
+function sizeCanvas() { const d = window.devicePixelRatio || 1; cv.width = innerWidth * d; cv.height = innerHeight * d; cx2.setTransform(d, 0, 0, d, 0, 0); }
+function confetti(n = 140) {
+  if (!cx2) return; if (reduce()) n = Math.round(n / 4); sizeCanvas();
+  for (let i = 0; i < n; i++) parts.push({ x:innerWidth / 2 + (Math.random() - .5) * innerWidth * .5, y:innerHeight * .3, vx:(Math.random() - .5) * 14, vy:-Math.random() * 13 - 3, g:.22 + Math.random() * .15, w:6 + Math.random() * 7, h:4 + Math.random() * 6, r:Math.random() * 6, vr:(Math.random() - .5) * .35, c:COLORS[i % COLORS.length], life:0 });
+  if (!raf) raf = requestAnimationFrame(tick);
+}
+function tick() {
+  cx2.clearRect(0, 0, innerWidth, innerHeight);
+  parts = parts.filter(p => p.y < innerHeight + 30 && p.life < 320);
+  parts.forEach(p => { p.life++; p.vy += p.g; p.vx *= .995; p.x += p.vx; p.y += p.vy; p.r += p.vr; cx2.save(); cx2.translate(p.x, p.y); cx2.rotate(p.r); cx2.fillStyle = p.c; cx2.fillRect(-p.w / 2, -p.h / 2, p.w, p.h); cx2.restore(); });
+  raf = parts.length ? requestAnimationFrame(tick) : 0; if (!raf) cx2.clearRect(0, 0, innerWidth, innerHeight);
+}
+function resetFx() { G.duel = false; clearTimers(); parts = []; if (raf) { cancelAnimationFrame(raf); raf = 0; } if (cx2) cx2.clearRect(0, 0, innerWidth, innerHeight); $('#toast').className = 'toast'; $('#banner').className = 'banner'; }
+
+
+/* ================= СВОИ КАРТИНКИ (оформление) ================= */
+const TKEY = 'padezhi-quest-theme-v1', HEMO = ['🧚‍♀️', '⛄'];
+const TH = { bg:null, h:[null, null] };
+try { const r = JSON.parse(localStorage.getItem(TKEY) || 'null'); if (r && typeof r === 'object') { TH.bg = r.bg || null; TH.h = [r.h0 || null, r.h1 || null]; } } catch (e) {}
+const saveTH = () => { try { localStorage.setItem(TKEY, JSON.stringify({ bg:TH.bg, h0:TH.h[0], h1:TH.h[1] })); return true; } catch (e) { return false; } };
+function applyTheme() {
+  const r = document.documentElement, b = document.body.style;
+  if (TH.bg) { r.classList.add('has-bg'); b.backgroundImage = `url("${TH.bg}")`; b.backgroundSize = 'cover'; b.backgroundPosition = 'center'; b.backgroundAttachment = 'fixed'; }
+  else { r.classList.remove('has-bg'); b.backgroundImage = ''; b.backgroundSize = ''; b.backgroundPosition = ''; }
+}
+function heroHTML(i, kind) {
+  if (TH.h[i]) return `<img class="himg ${kind}${kind === 'mas' ? ' mascot' : ''}" src="${TH.h[i]}" alt="">`;
+  return kind === 'hero' ? `<span class="hchar ${i ? 'b' : ''}" aria-hidden="true">${HEMO[i]}</span>` : `<span class="mascot" aria-hidden="true">${HEMO[i]}</span>`;
+}
+function fileToDataURL(file, maxSide, type) {
+  return new Promise((res, rej) => {
+    const img = new Image(), url = URL.createObjectURL(file);
+    img.onload = () => {
+      const sc = Math.min(1, maxSide / Math.max(img.width, img.height)), c = document.createElement('canvas');
+      c.width = Math.max(1, Math.round(img.width * sc)); c.height = Math.max(1, Math.round(img.height * sc));
+      c.getContext('2d').drawImage(img, 0, 0, c.width, c.height); URL.revokeObjectURL(url); res(c.toDataURL(type, 0.82));
+    };
+    img.onerror = () => { URL.revokeObjectURL(url); rej(new Error('bad image')); }; img.src = url;
+  });
+}
+
+/* обрезка белых полей и удаление белого фона у героев */
+function bboxNonWhite(d, w, h, thr) {
+  let x0 = w, y0 = h, x1 = -1, y1 = -1;
+  for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
+    const i = (y * w + x) * 4;
+    if (d[i + 3] > 20 && (d[i] < thr || d[i + 1] < thr || d[i + 2] < thr)) { if (x < x0) x0 = x; if (x > x1) x1 = x; if (y < y0) y0 = y; if (y > y1) y1 = y; }
+  }
+  return x1 < 0 ? null : { x0, y0, x1, y1 };
+}
+function cutWhite(d, w, h, thr) {         // белый, связанный с краем картинки, становится прозрачным
+  const seen = new Uint8Array(w * h), st = [];
+  const white = p => { const i = p * 4; return d[i + 3] < 20 || (d[i] >= thr && d[i + 1] >= thr && d[i + 2] >= thr); };
+  const push = p => { if (!seen[p] && white(p)) { seen[p] = 1; st.push(p); } };
+  for (let x = 0; x < w; x++) { push(x); push((h - 1) * w + x); }
+  for (let y = 0; y < h; y++) { push(y * w); push(y * w + w - 1); }
+  while (st.length) {
+    const p = st.pop(), x = p % w, y = (p - x) / w; d[p * 4 + 3] = 0;
+    if (x > 0) push(p - 1); if (x < w - 1) push(p + 1); if (y > 0) push(p - w); if (y < h - 1) push(p + w);
+  }
+}
+function heroToDataURL(file, maxSide) {
+  return new Promise((res, rej) => {
+    const img = new Image(), url = URL.createObjectURL(file);
+    img.onload = () => {
+      try {
+        const sc = Math.min(1, 1400 / Math.max(img.width, img.height)), c1 = document.createElement('canvas');
+        c1.width = Math.max(1, Math.round(img.width * sc)); c1.height = Math.max(1, Math.round(img.height * sc));
+        const g1 = c1.getContext('2d'); g1.drawImage(img, 0, 0, c1.width, c1.height);
+        const bb = bboxNonWhite(g1.getImageData(0, 0, c1.width, c1.height).data, c1.width, c1.height, 238) || { x0:0, y0:0, x1:c1.width - 1, y1:c1.height - 1 };
+        const pad = 6, sx = Math.max(0, bb.x0 - pad), sy = Math.max(0, bb.y0 - pad), sw = Math.min(c1.width, bb.x1 + pad) - sx, sh = Math.min(c1.height, bb.y1 + pad) - sy;
+        const k = Math.min(1, maxSide / Math.max(sw, sh)), c2 = document.createElement('canvas');
+        c2.width = Math.max(1, Math.round(sw * k)); c2.height = Math.max(1, Math.round(sh * k));
+        const g2 = c2.getContext('2d'); g2.drawImage(c1, sx, sy, sw, sh, 0, 0, c2.width, c2.height);
+        const im = g2.getImageData(0, 0, c2.width, c2.height); cutWhite(im.data, c2.width, c2.height, 240); g2.putImageData(im, 0, 0);
+        URL.revokeObjectURL(url); res(c2.toDataURL('image/png'));
+      } catch (e) { URL.revokeObjectURL(url); rej(e); }
+    };
+    img.onerror = () => { URL.revokeObjectURL(url); rej(new Error('bad image')); }; img.src = url;
+  });
+}
+
+let thPick = null;
+function themeScreen(msg) {
+  window.scrollTo(0, 0);
+  const slot = (k, title, has, prev) => `<div class="panelbox"><h3 style="margin:0">${title}</h3><div class="thprev">${prev}</div>
+    <div class="seg"><button class="chip" data-act="tpick" data-k="${k}">🖼️ Загрузить</button>${has ? `<button class="chip" data-act="tclear" data-k="${k}">✖ Убрать</button>` : ''}</div></div>`;
+  $('#screen').innerHTML = `<section>
+    <div class="lvhead" style="--c:var(--l1)"><span class="em">🎨</span><div><h1>ОФОРМЛЕНИЕ</h1><p class="sub" style="margin:0;color:var(--ink)">Загрузи свои картинки: фон и двух героев. Белые поля вокруг героя обрежутся сами. Всё хранится только в этом браузере.</p></div></div>
+    <p class="msg" id="thMsg">${msg || ''}</p>
+    ${slot('bg', '🏔️ Фон', !!TH.bg, TH.bg ? `<div class="bgprev" style="background-image:url('${TH.bg}')"></div>` : '<span class="sub">Пока не выбран</span>')}
+    ${slot('0', '🧚‍♀️ Левый герой (карта, задания, команда 1)', !!TH.h[0], TH.h[0] ? `<img class="himg" src="${TH.h[0]}" alt="">` : '<span class="sub">Пока значок 🧚‍♀️</span>')}
+    ${slot('1', '⛄ Правый герой (карта, задания, команда 2)', !!TH.h[1], TH.h[1] ? `<img class="himg" src="${TH.h[1]}" alt="">` : '<span class="sub">Пока значок ⛄</span>')}
+    <input type="file" accept="image/*,.jfif,.jpg,.jpeg,.png,.webp" id="tfile" hidden>
+    <button class="reset" data-act="map">← На карту</button></section>`;
+}
+function themePicked(input) {
+  const f = input.files && input.files[0], k = thPick; input.value = '';
+  if (!f || k == null || !(/^image\//.test(f.type) || /\.(jpe?g|jfif|png|webp|gif|avif|bmp)$/i.test(f.name))) return;
+  const bg = k === 'bg';
+  (bg ? fileToDataURL(f, 1400, 'image/jpeg') : heroToDataURL(f, 420)).then(url => {
+    if (bg) TH.bg = url; else TH.h[+k] = url;
+    const ok = saveTH(); applyTheme(); themeScreen(ok ? '' : 'Картинка работает, но в память браузера не поместилась — после закрытия страницы её придётся загрузить снова.');
+  }).catch(() => themeScreen('Не получилось открыть этот файл. Попробуй другую картинку (jpg, png, webp).'));
+}
+
+/* ================= КАРТА И УРОВНИ ================= */
+const doneCount = l => l.stages.filter((s, i) => P.done[`${l.id}-${i + 1}`]).length;
+function showMap() {
+  resetFx(); G.own = null; G.marathon = false; window.scrollTo(0, 0);
+  const total = TOTAL_STAGES, done = LV.reduce((n, l) => n + doneCount(l), 0), pct = Math.round(done / total * 100);
+  $('#screen').innerHTML = `
+  <section>
+    <div class="hero"><div class="heroes">${heroHTML(0, 'hero')}<h1>ПАДЕЖНЫЙ КВЕСТ</h1>${heroHTML(1, 'hero')}</div>
+      <p class="sub">Учимся задавать вопросы, склонять слова и находить падежи!</p>
+      <p class="sub" style="color:var(--ink)">Пройди все испытания и стань мастером падежей!</p></div>
+    <div class="progress"><span>ПРОГРЕСС</span><div class="pbar"><i style="width:${pct}%"></i></div><span>${pct}%</span></div>
+    <div class="islands">
+      ${LV.map((l, i) => { const d = doneCount(l), all = d === l.stages.length; return `
+      <button class="island" data-act="level" data-i="${i}" style="--c:var(${l.c})">
+        ${all ? '<span class="done">✅</span>' : ''}<span class="em">${l.em}</span><span class="num">${l.id}</span><b>${l.short}</b>
+        <small>${l.own ? `${WORDS.length} ${WORDS.length === 1 ? 'слово' : 'слов'} · ${d}/${l.stages.length}` : `${d} из ${l.stages.length} этапов`}</small>
+      </button>`; }).join('')}
+    </div>
+    <button class="big" data-act="marathon"><span style="font-size:2rem">🏆</span><span>ФИНАЛЬНЫЙ МАРАФОН<small>15 заданий из всех уровней${P.marathon ? ` · лучший результат: ${P.marathon}/15` : ''}</small></span></button>
+    <button class="big duelb" data-act="duel"><span style="font-size:2rem">⚔️</span><span>СНЕЖНЫЙ БОЙ — 2 ИГРОКА<small>Две команды кидают снежки друг в друга</small></span></button>
+    <button class="big duelb" data-act="theme" style="margin-top:14px"><span style="font-size:2rem">🎨</span><span>ОФОРМЛЕНИЕ<small>Свой фон и герои из твоих картинок</small></span></button>
+    <button class="reset" data-act="reset" id="resetBtn">Сбросить прогресс</button>
+  </section>`;
+}
+function introHTML(l) {
+  const I = l.intro; if (!I) return '';
+  if (I.type === 'cases') return `<div class="intro"><h3>${I.title}</h3><div class="tbl">${ORDER.map(c => `<div class="r"><b>${CASES[c].abbr}</b><span>${cap(CASES[c].name)}<br><i>${CASES[c].q}</i></span><span class="help">${CASES[c].helper}</span></div>`).join('')}</div></div>`;
+  let html = '';
+  if (I.type === 'adj') html += `<div class="intro"><h3>Вопросы прилагательных</h3><div class="tbl">${ORDER.map(c => `<div class="r"><b>${CASES[c].abbr}</b><span>${ADJQ[c].join(' · ')}</span><span class="help">${CASES[c].helper}</span></div>`).join('')}</div></div>`;
+  const { adj, noun, g, title } = I, raw = phraseRaw(adj, noun, g, false), base = raw[0];
+  return html + `<div class="intro"><p style="margin:0 0 4px">${title}</p><h3>${(adj + ' ' + noun).toUpperCase()}</h3>
+    <div class="tbl">${ORDER.map((c, i) => `<div class="r"><b>${CASES[c].abbr}</b><span>${i === 5 ? 'о ' : ''}${hl(base, raw[i])}</span></div>`).join('')}</div></div>`;
+}
+function showLevel(i) {
+  resetFx(); G.lv = i; G.own = null; const l = LV[i]; window.scrollTo(0, 0);
+  if (l.own) { ownHome(); return; }
+  $('#screen').innerHTML = `
+  <section>
+    <div class="lvhead" style="--c:var(${l.c})"><span class="em">${l.em}</span><div><h1>${l.id}. ${l.name}</h1><p class="sub" style="margin:0;color:var(--ink)">${l.desc}</p></div></div>
+    ${introHTML(l)}
+    <div class="stages">
+      ${l.stages.map((s, k) => `<button class="stage" data-act="stage" data-i="${i}" data-k="${k}" style="--c:var(${l.c})"><span class="n">${k + 1}</span><span><b>${s.t}</b><small>${s.d}</small></span><span class="ck">${P.done[`${l.id}-${k + 1}`] ? '✅' : '☆'}</span></button>`).join('')}
+    </div>
+    <button class="reset" data-act="map">← На карту</button>
+  </section>`;
+}
+function startStage(li, si) {
+  resetFx(); G.lv = li; G.si = si; G.stage = LV[li].stages[si]; G.marathon = false; G.own = null;
+  G.run = { first:0, total:0, best:0 }; G.tasks = G.stage.make(); G.ti = 0; runTask();
+}
+function startMarathon() {
+  resetFx(); G.marathon = true; G.own = null; G.run = { first:0, total:0, best:0 }; G.streak = 0; updateStreak();
+  const mk = (l, s) => LV[l - 1].stages[s].make(), pick = (a, n) => shuffle(a).slice(0, n);
+  G.tasks = shuffle([...pick(mk(1, 2), 2), ...pick(mk(1, 3), 2), ...pick(mk(2, 3), 2), ...pick(mk(2, 4), 2), ...pick(mk(3, 5), 2), ...pick(mk(3, 6), 1), ...pick(mk(4, 2), 1), ...pick(mk(4, 3), 1), ...pick(mk(5, 1), 2)]);
+  G.ti = 0; runTask();
+}
+
+/* ================= ЗАДАНИЕ ================= */
+function runTask() {
+  clearTimers(); $('#toast').className = 'toast'; $('#banner').className = 'banner';
+  const t = G.tasks[G.ti], l = LV[G.lv]; G.mist = 0; G.locked = false;
+  const title = G.marathon ? '🏆 ФИНАЛЬНЫЙ МАРАФОН' : `${l.em} ${l.id}. ${l.short} · этап ${G.si + 1}`;
+  $('#screen').innerHTML = `
+  <section>
+    <div class="hud"><button class="back" data-act="back">← Назад</button><span>${title}</span><span>${G.ti + 1} / ${G.tasks.length}</span></div>
+    <div class="bar"><i style="width:${G.ti / G.tasks.length * 100}%"></i></div>
+    <div class="mascots">${heroHTML(0, 'mas')}<h2 class="prompt">${t.prompt}</h2>${heroHTML(1, 'mas')}</div>
+    <div id="body"></div>
+    <div class="hintrow"><button class="btn hint" data-act="hint" data-nosound="1">💡 ПОДСКАЗКА</button></div>
+    <div class="hintbox" id="hintBox" hidden></div>
+  </section>`;
+  window.scrollTo(0, 0);
+  const host = $('#body');
+  if (t.type === 'choice') renderChoice(t, host, taskSuccess);
+  else if (t.type === 'sort') renderSort(t, host, taskSuccess);
+  else if (t.type === 'mysent') renderMySent(t, host, taskSuccess);
+  else if (t.type === 'own') renderOwnTrainer(t, host, taskSuccess);
+}
+function mascots(cls) { document.querySelectorAll('.mascot').forEach(m => { m.classList.remove('cheer', 'oops'); void m.offsetWidth; m.classList.add(cls); }); }
+function taskMistake() {
+  mascots('oops');
+  G.mist++; if (G.mist === 1) { G.streak = 0; updateStreak(); }
+  Snd.playWrong(); toast('💡 ПОПРОБУЙ ЕЩЁ РАЗ!', 'try');
+}
+function taskSuccess(el, msg) {
+  if (G.locked) return; G.locked = true;
+  const run = G.run, first = G.mist === 0; run.total++;
+  if (first) { run.first++; G.streak++; run.best = Math.max(run.best, G.streak); }
+  updateStreak();
+  mascots('cheer');
+  const r = (el || $('#body')).getBoundingClientRect(), x = r.left + r.width / 2, y = Math.min(Math.max(r.top + Math.min(r.height / 2, 50), 130), innerHeight - 130);
+  Snd.playCorrect(); toast(`🎉 ${msg || 'ПРАВИЛЬНО!'}  +1 ⭐`, 'good'); sparkle(x, y);
+  later(() => rewardStar(x, y), 300);
+  let wait = 1900;
+  if (first && (G.streak === 3 || G.streak === 5 || G.streak === 10)) {
+    wait = 2800; const n = G.streak;
+    later(() => { banner(n === 10 ? '🏆 НЕВЕРОЯТНАЯ СЕРИЯ!' : `🔥 СЕРИЯ ×${n}!`); Snd.playCombo(n); if (n >= 5) sparkle(innerWidth / 2, innerHeight * 0.46, 12); if (n === 10) confetti(70); }, 1300);
+  }
+  later(advance, wait);
+}
+function advance() { G.ti++; if (G.ti < G.tasks.length) runTask(); else stageDone(); }
+
+/* ----- выбор ответа ----- */
+function optLabel(o) {
+  if (o.kind === 'case') return `${o.text}<small>${CASES[BYABBR[o.text]].name}</small>`;
+  if (o.kind === 'adjq') return o.text.split('|').map(esc).join('<br>');
+  return esc(o.text);
+}
+function renderChoice(task, host, done, onWrong, ctl) {
+  let si = 0; const subs = task.subs, last = subs.length - 1, mk = task.marks || [];
+  host.innerHTML = `${task.note ? `<div class="note">${esc(task.note)}</div>` : ''}${task.big ? `<div class="bigword">${task.big}</div>` : ''}<p class="sentence" ${task.s ? '' : 'hidden'}></p><div class="subbox"></div>`;
+  const sentEl = host.querySelector('.sentence'), subEl = host.querySelector('.subbox');
+  function sentence(all) {
+    if (!task.s) return; let k = 0;
+    sentEl.innerHTML = task.s.replace(/\{\}/g, () => {
+      const i = k++, w = mk[i] == null ? '' : mk[i], fx = (task.fix || [])[i];
+      if (task.mode === 'blank') return all ? `<span class="mk good">${esc(fx)}</span>` : '<span class="blank">&nbsp;&nbsp;&nbsp;&nbsp;</span>';
+      if (task.mode === 'wrong') return all ? `<span class="mk good">${esc(fx)}</span> ✅` : `<span class="mk bad">${esc(w)}</span> ❌`;
+      return `<span class="${all || i < si ? 'mk good' : (i === si ? 'mk on' : 'mk')}">${esc(w)}</span>`;
+    });
+  }
+  function showSub() {
+    const sub = subs[si]; sentence(false);
+    subEl.innerHTML = `<p class="ask">${sub.ask}</p><div class="opts ${sub.opts.length >= 6 ? 'six' : ''}">${sub.opts.map((o, k) => `<button class="opt ${o.kind === 'q' ? 'q' : ''}" data-k="${k}" data-nosound="1">${optLabel(o)}</button>`).join('')}</div>`;
+    subEl.querySelectorAll('.opt').forEach(btn => btn.addEventListener('click', () => {
+      if (ctl ? ctl.locked : G.locked) return;
+      const o = sub.opts[+btn.dataset.k], ok = Array.isArray(sub.ans) ? sub.ans.includes(o.text) : o.text === sub.ans;
+      if (ok) {
+        btn.classList.add('ok'); subEl.querySelectorAll('.opt').forEach(b => b.disabled = true);
+        if (si < last) { Snd.playPlace(); si++; later(showSub, 800); }
+        else { sentence(true); done(btn, task.doneMsg); }
+      } else if (onWrong) onWrong(btn, sub);
+      else { btn.classList.add('no'); btn.disabled = true; taskMistake(); }
+    }));
+  }
+  showSub();
+}
+
+/* ----- перетаскивание ----- */
+function renderSort(task, host, done, onWrong, ctl) {
+  const locked = () => (ctl ? ctl.locked : G.locked);
+  const T = task.targets, C = task.cards, single = task.mode === 'single'; let sel = null;
+  const cardsHTML = C.map((c, k) => `<div class="dcard ${c.kind === 'q' ? 'q' : ''}" data-k="${k}" tabindex="0" role="button">${c.label != null ? c.label : esc(c.text)}</div>`).join('');
+  let tl = '';
+  const L = task.layout;
+  if (L === 'order') tl = `<div class="order">${T.map((t, i) => `<div class="slotwrap"><div class="num">${t.label}</div><div class="slot one" data-t="${i}" tabindex="0"></div></div>`).join('')}</div>`;
+  else if (L === 'pairs') tl = `<div class="pairs">${T.map((t, i) => `<div class="pair"><div class="plabel"><span class="pa">${t.label}</span><span class="pt">${t.sub || ''}</span></div><div class="slot one" data-t="${i}" tabindex="0"><span class="ph">перетащи сюда</span></div></div>`).join('')}</div>`;
+  else if (L === 'chain') tl = `<div class="chain">${T.map((t, i) => t.fixed !== undefined ? `<div class="fixed">${t.fixed}</div>` : t.arrow ? '<div class="arrow">⬇️</div>' : `<div class="slot one" data-t="${i}" tabindex="0"><span class="ph">${t.label}</span></div>`).join('')}</div>`;
+  else if (L === 'row') tl = `<div class="row">${T.map((t, i) => t.fixed !== undefined ? `<div class="fixed">${t.fixed}</div>` : `<div class="slot one" data-t="${i}" tabindex="0"><span class="ph">${t.label}</span></div>`).join('')}</div>`;
+  else tl = `<div class="cats">${T.map((t, i) => `<div class="slot bin many" data-t="${i}" tabindex="0"><div class="binhead">${t.label}</div><div class="chips"></div></div>`).join('')}</div>`;
+  host.innerHTML = `<div class="sortbox">${task.big ? `<div class="bigword">${task.big}</div>` : ''}<div class="sortwrap"><div class="sortmain">${tl}</div><div class="pool">${cardsHTML}</div></div></div>`;
+  let left = C.length;
+  const slotEl = i => host.querySelector(`.slot[data-t="${i}"]`);
+  const complete = () => single ? T.every((t, i) => t.fixed !== undefined || t.arrow || slotEl(i).classList.contains('filled')) : left === 0;
+  const snap = el => { el.style.transition = 'transform .28s cubic-bezier(.3,1.3,.5,1)'; el.style.transform = ''; };
+  function tryPlace(el, slot) {
+    if (locked() || el.dataset.done) return;
+    const t = T[+slot.dataset.t], c = C[+el.dataset.k];
+    if (single && slot.classList.contains('filled')) { snap(el); return; }
+    const ok = t.ans !== undefined ? c.text === t.ans : c.to === t.id;
+    if (ok) {
+      el.dataset.done = '1'; el.classList.remove('sel', 'dragging'); el.classList.add('placed'); el.style.transition = ''; el.style.transform = '';
+      (single ? slot : slot.querySelector('.chips')).appendChild(el);
+      if (single) slot.classList.add('filled');
+      slot.classList.remove('over', 'bad'); slot.classList.add('good'); setTimeout(() => slot.classList.remove('good'), 500);
+      sel = null; left--; Snd.playDrop(); Snd.playPlace();
+      const r = slot.getBoundingClientRect(); sparkle(r.left + r.width / 2, r.top + r.height / 2, 4);
+      if (complete()) { host.querySelectorAll('.pool .dcard').forEach(x => x.classList.add('gone')); done(host, task.done); }
+    } else {
+      snap(el); el.classList.remove('sel'); sel = null;
+      slot.classList.remove('bad'); void slot.offsetWidth; slot.classList.add('bad'); (onWrong || taskMistake)();
+    }
+  }
+  const slotAt = (x, y) => { for (const e of document.elementsFromPoint(x, y)) { const s = e.closest && e.closest('.slot'); if (s && host.contains(s)) return s; } return null; };
+  host.querySelectorAll('.dcard').forEach(el => {
+    let st = null;
+    el.addEventListener('pointerdown', e => {
+      if (locked() || el.dataset.done) return; e.preventDefault();
+      try { el.setPointerCapture(e.pointerId); } catch (err) {}
+      st = { x:e.clientX, y:e.clientY, moved:false }; el.style.transition = 'none';
+    });
+    el.addEventListener('pointermove', e => {
+      if (!st) return; const fl = host.closest('.arena.face .pl0') ? -1 : 1, dx = (e.clientX - st.x) * fl, dy = (e.clientY - st.y) * fl;
+      if (!st.moved && Math.hypot(dx, dy) > 8) { st.moved = true; el.classList.add('dragging'); el.classList.remove('sel'); sel = null; Snd.playDrag(); }
+      if (st.moved) {
+        el.style.transform = `translate(${dx}px,${dy}px) scale(1.06) rotate(${Math.max(-10, Math.min(10, dx * 0.03))}deg)`;
+        const s = slotAt(e.clientX, e.clientY);
+        host.querySelectorAll('.slot.over').forEach(x => { if (x !== s) x.classList.remove('over'); }); if (s) s.classList.add('over');
+      }
+    });
+    const end = (e, cancel) => {
+      if (!st) return; const s0 = st; st = null; el.classList.remove('dragging');
+      host.querySelectorAll('.slot.over').forEach(x => x.classList.remove('over'));
+      if (!s0.moved) { if (cancel) return; host.querySelectorAll('.dcard.sel').forEach(x => { if (x !== el) x.classList.remove('sel'); }); const on = !el.classList.contains('sel'); el.classList.toggle('sel', on); sel = on ? el : null; Snd.playClick(); return; }
+      const s = cancel ? null : slotAt(e.clientX, e.clientY);
+      if (s) tryPlace(el, s); else snap(el);
+    };
+    el.addEventListener('pointerup', e => end(e, false)); el.addEventListener('pointercancel', e => end(e, true));
+    el.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); if (el.dataset.done || locked()) return; host.querySelectorAll('.dcard.sel').forEach(x => { if (x !== el) x.classList.remove('sel'); }); const on = !el.classList.contains('sel'); el.classList.toggle('sel', on); sel = on ? el : null; Snd.playClick(); } });
+  });
+  host.addEventListener('click', e => { const s = e.target.closest('.slot'); if (s && sel) tryPlace(sel, s); });
+  host.addEventListener('keydown', e => { if ((e.key === 'Enter' || e.key === ' ') && sel) { const s = e.target.closest && e.target.closest('.slot'); if (s) { e.preventDefault(); tryPlace(sel, s); } } });
+}
+
+/* ================= ЗАВЕРШЕНИЯ ================= */
+function stageDone() {
+  resetFx(); window.scrollTo(0, 0);
+  if (G.marathon) return finalScreen();
+  const l = LV[G.lv]; P.done[`${l.id}-${G.si + 1}`] = 1; saveP();
+  if (G.own) {
+    Snd.playStageComplete();
+    $('#screen').innerHTML = `<section class="result"><h1 class="zoom">🎉 ЭТАП ПРОЙДЕН!</h1><div class="bigstars"><span>⭐</span><span>⭐</span><span>⭐</span></div>
+      <div class="actions"><button class="btn go" data-act="ostart" data-i="${G.own.i}" data-k="${G.si}">🔁 ЕЩЁ РАЗ</button><button class="btn alt" data-act="oword" data-i="${G.own.i}">⬅️ К МОЕЙ ПРАКТИКЕ</button></div></section>`;
+    sparkle(innerWidth / 2, innerHeight * 0.3, 10); return;
+  }
+  if (G.si < l.stages.length - 1) {
+    Snd.playStageComplete();
+    $('#screen').innerHTML = `<section class="result"><h1 class="zoom">🎉 ЭТАП ПРОЙДЕН!</h1><div class="bigstars"><span>⭐</span><span>⭐</span><span>⭐</span></div>
+      <p class="sub">Этап ${G.si + 1} из ${l.stages.length}: верно с первого раза ${G.run.first} из ${G.run.total}.</p>
+      <div class="actions" style="margin-top:16px"><button class="btn go" data-act="stage" data-i="${G.lv}" data-k="${G.si + 1}">➡️ СЛЕДУЮЩИЙ ЭТАП</button><button class="btn alt" data-act="level" data-i="${G.lv}">⬅️ К ЭТАПАМ</button></div></section>`;
+    sparkle(innerWidth / 2, innerHeight * 0.3, 10); return;
+  }
+  Snd.playLevelComplete(); confetti(150); starBurst(22);
+  const hasNext = G.lv < LV.length - 1;
+  $('#screen').innerHTML = `<section class="result"><h1 class="zoom">🏆 УРОВЕНЬ ПРОЙДЕН!</h1><div class="bigstars"><span>⭐</span><span>⭐</span><span>⭐</span></div>
+    <p class="sub">${l.em} ${l.name}</p>
+    <div class="actions" style="margin-top:16px">${hasNext ? `<button class="btn go" data-act="level" data-i="${G.lv + 1}">➡️ СЛЕДУЮЩИЙ УРОВЕНЬ</button>` : ''}<button class="btn" data-act="marathon">🏆 ФИНАЛЬНЫЙ МАРАФОН</button><button class="btn alt" data-act="map">🗺️ НА КАРТУ</button></div></section>`;
+}
+function rankFor(first, total) { const p = first / total; return p >= 0.93 ? 'МАСТЕР ПАДЕЖЕЙ' : p >= 0.73 ? 'ЗНАТОК ПАДЕЖЕЙ' : p >= 0.45 ? 'ЮНЫЙ ПАДЕЖНИК' : 'ИСКАТЕЛЬ ПАДЕЖЕЙ'; }
+function finalScreen() {
+  Snd.playFinalVictory(); confetti(200); starBurst(26); later(() => confetti(120), 900);
+  const r = G.run; if (r.first > P.marathon) { P.marathon = r.first; saveP(); }
+  $('#screen').innerHTML = `<section class="result"><div style="font-size:2.6rem">🎊</div><h1 class="zoom">🏆 ПАДЕЖНЫЙ ЭКСПЕРТ!</h1>
+    <div class="stats"><div>⭐ Правильных ответов: <b>${r.first}/${r.total}</b></div><div>🔥 Лучшая серия: <b>${r.best}</b></div><div>🏆 Звание: <b>${rankFor(r.first, r.total)}</b></div></div>
+    <div class="actions"><button class="btn go" data-act="marathon">🔄 ПРОЙТИ ЕЩЁ РАЗ</button><button class="btn alt" data-act="map">🏠 В МЕНЮ</button></div></section>`;
+}
+
+/* ================= МОЯ ПРАКТИКА ================= */
+const OS = { g:'м', an:false, manual:false, anManual:false, title:'', adj:'' };
+const guessG = w => /[ая]$/.test(w) ? 'ж' : /[ое]$/.test(w) ? 'с' : 'м';
+function ownHome() {
+  const l = LV[5]; window.scrollTo(0, 0);
+  $('#screen').innerHTML = `
+  <section>
+    <div class="lvhead" style="--c:var(--l6)"><span class="em">🟣</span><div><h1>6. МОЯ ПРАКТИКА</h1><p class="sub" style="margin:0;color:var(--ink)">Введи своё слово — тренажёр составит формы, а ты их проверишь и потренируешься.</p></div></div>
+    ${WORDS.length ? `<h3 style="margin:0 0 8px">Мои слова</h3><div class="words">${WORDS.map((w, i) => `<span class="wchip"><button data-act="oword" data-i="${i}" style="font-weight:900;font-size:1.1rem;padding:6px 6px">${esc(w.title)}</button><button data-act="odel" data-i="${i}" aria-label="Удалить" data-nosound="1">✕</button></span>`).join('')}</div>` : ''}
+    <div class="panelbox">
+      <h3 style="margin:0">Новое слово</h3>
+      <label class="field">Существительное<input class="in" id="inNoun" autocomplete="off" placeholder="например: ручка" maxlength="30"></label>
+      <div class="field">Род: он (мой) · она (моя) · оно (моё)
+        <div class="seg" id="segG"><button class="chip" data-act="og" data-g="м">👦 мужской</button><button class="chip" data-act="og" data-g="ж">👧 женский</button><button class="chip" data-act="og" data-g="с">🟦 средний</button></div></div>
+      <div class="field">Отвечает на вопрос (кто? — люди и животные)
+        <div class="seg" id="segA"><button class="chip" data-act="oa" data-a="0">🪑 что?</button><button class="chip" data-act="oa" data-a="1">🐶 кто?</button></div></div>
+      <label class="field">Прилагательное (можно не писать)<input class="in" id="inAdj" autocomplete="off" placeholder="например: красивая" maxlength="30"></label>
+      <button class="btn" data-act="mkforms">✨ СОЗДАТЬ ФОРМЫ</button>
+      <p class="msg" id="ownMsg"></p>
+      <div id="formsBox"></div>
+    </div>
+    <button class="reset" data-act="map">← На карту</button>
+  </section>`;
+  OS.manual = false; OS.anManual = false; OS.g = 'м'; OS.an = false; syncSeg();
+  $('#inNoun').addEventListener('input', e => { const w = e.target.value.trim().toLowerCase(); if (!OS.manual) OS.g = guessG(w); if (!OS.anManual) OS.an = guessAnim(w); syncSeg(); });
+  $('#inNoun').addEventListener('keydown', e => { if (e.key === 'Enter') mkForms(); });
+}
+function syncSeg() {
+  document.querySelectorAll('#segG .chip').forEach(b => b.classList.toggle('on', b.dataset.g === OS.g));
+  document.querySelectorAll('#segA .chip').forEach(b => b.classList.toggle('on', (b.dataset.a === '1') === OS.an));
+}
+function mkForms() {
+  const noun = $('#inNoun').value.trim().toLowerCase(), adj = $('#inAdj').value.trim().toLowerCase(), msg = $('#ownMsg');
+  msg.className = 'msg'; msg.textContent = '';
+  if (!/^[а-яё-]+$/.test(noun)) { msg.textContent = 'Напиши слово русскими буквами.'; return; }
+  if (adj && !/^[а-яё-]+$/.test(adj)) { msg.textContent = 'Прилагательное нужно написать русскими буквами.'; return; }
+  let forms = nounForms(noun, OS.g, OS.an), warn = '';
+  if (!forms) { forms = Array(6).fill(noun); warn = 'Это слово особенное — впиши формы сам. '; }
+  if (adj) { const a = adjForms(adj, OS.an); if (a) forms = forms.map((f, i) => a[i] + ' ' + f); else warn += 'Прилагательное не узнал — допиши его в формы сам. '; }
+  OS.title = adj ? adj + ' ' + noun : noun;
+  $('#formsBox').innerHTML = `<h3 style="margin:8px 0">Проверь формы слова «${esc(OS.title)}»</h3>
+    <p class="sub">Если слово особенное (например, «день» → «дня»), исправь форму.</p>
+    <div class="panelbox" style="box-shadow:none;padding:0;gap:8px">${ORDER.map((c, i) => `<div class="frow"><span>${CASES[c].abbr}<small>${CASES[c].q}</small></span><input class="in oform" data-i="${i}" value="${esc(forms[i])}" autocomplete="off"></div>`).join('')}</div>
+    <p class="msg" id="saveMsg">${warn}</p><button class="btn go" data-act="osave">💾 СОХРАНИТЬ И ТРЕНИРОВАТЬСЯ</button>`;
+  $('#formsBox').scrollIntoView({ behavior:reduce() ? 'auto' : 'smooth', block:'start' });
+}
+function saveWord() {
+  const ins = [...document.querySelectorAll('.oform')].map(i => i.value.trim().toLowerCase().replace(/\s+/g, ' '));
+  if (ins.length !== 6 || ins.some(x => !x)) { const m = $('#saveMsg'); m.className = 'msg'; m.textContent = 'Заполни все шесть форм.'; return; }
+  WORDS = WORDS.filter(w => w.title !== OS.title); WORDS.unshift({ title:OS.title, forms:ins, g:OS.g, an:OS.an }); WORDS = WORDS.slice(0, 12); saveW();
+  ownWord(0);
+}
+function ownWord(i) {
+  const w = WORDS[i]; if (!w) { ownHome(); return; } window.scrollTo(0, 0);
+  const full = withPrep(w.forms);
+  $('#screen').innerHTML = `<section>
+    <div class="lvhead" style="--c:var(--l6)"><span class="em">🟣</span><div><h1>${esc(w.title)}</h1><p class="sub" style="margin:0;color:var(--ink)">Выбери упражнение</p></div></div>
+    <div class="intro"><div class="tbl">${ORDER.map((c, k) => `<div class="r"><b>${CASES[c].abbr}</b><span>${esc(full[k])}</span></div>`).join('')}</div></div>
+    <div class="stages">${LV[5].stages.map((s, k) => `<button class="stage" data-act="ostart" data-i="${i}" data-k="${k}" style="--c:var(--l6)"><span class="n">${k + 1}</span><span><b>${s.t}</b><small>${s.d}</small></span><span class="ck">${P.done[`6-${k + 1}`] ? '✅' : '☆'}</span></button>`).join('')}</div>
+    <button class="reset" data-act="level" data-i="5">← К моим словам</button></section>`;
+}
+function startOwn(i, k) {
+  const w = WORDS[i]; if (!w) { ownHome(); return; }
+  resetFx(); G.lv = 5; G.si = k; G.stage = LV[5].stages[k]; G.marathon = false; G.own = { i }; G.run = { first:0, total:0, best:0 }; G.ti = 0;
+  const raw = w.forms, full = withPrep(raw);
+  if (k === 0) G.tasks = [declineSort(w.title, raw, 'Идём по порядку: ' + MNEMO + '. У каждого падежа свой вопрос.')];
+  else if (k === 1) G.tasks = [1, 2].map(n => ({ type:'mysent', prompt:`МОЁ ПРЕДЛОЖЕНИЕ ${n}`, word:w, hint:`Поставь слово в одну из форм: ${full.slice(0, 5).join(', ')}…` }));
+  else G.tasks = shuffle([0, 1, 2, 3, 4, 5]).slice(0, 5).map(idx => {
+    const same = raw.map((f, j) => f === raw[idx] ? CASES[ORDER[j]].abbr : null).filter(Boolean);
+    return ch({ prompt:'КАКОЙ ПАДЕЖ?', note:same.length > 1 ? 'Такая форма бывает в двух падежах — подойдёт любой' : '', big:`${esc(full[idx])}<small>форма слова «${esc(w.title)}»</small>`,
+      subs:[{ ask:'Какой это падеж?', opts:optAll(), ans:same }], hint:'Вставь форму в предложение, задай вопрос и найди его в списке падежей.' });
+  });
+  runTask();
+}
+function findForm(sentence, forms) {
+  const norm = ' ' + sentence.toLowerCase().replace(/[^а-яё\- ]+/g, ' ').replace(/\s+/g, ' ').trim() + ' ';
+  const uniq = [...new Set(forms)].sort((a, b) => b.length - a.length);
+  for (const u of uniq) if (norm.includes(' ' + u + ' ')) return { text:u, idx:forms.map((f, i) => f === u ? i : -1).filter(i => i >= 0) };
+  return null;
+}
+function renderMySent(task, host, done) {
+  const w = task.word;
+  host.innerHTML = `<p class="ask">Придумай предложение со словом «${esc(w.title)}». Поставь слово в любую форму.</p>
+    <input class="in" id="sentIn" autocomplete="off" placeholder="Напиши предложение" maxlength="120">
+    <div style="margin-top:12px"><button class="btn go" id="sentBtn" data-nosound="1">✅ ПРОВЕРИТЬ</button></div><p class="msg" id="sentMsg"></p>`;
+  const check = () => {
+    const text = $('#sentIn').value.trim(), msg = $('#sentMsg'); msg.className = 'msg';
+    if (text.split(/\s+/).length < 2) { msg.textContent = 'Напиши целое предложение: хотя бы два слова.'; return; }
+    const f = findForm(text, w.forms);
+    if (!f) { msg.textContent = `Не нашёл слово «${w.title}» ни в одной форме. Поставь его в форму из таблицы и попробуй ещё раз.`; return; }
+    Snd.playPlace();
+    const re = new RegExp('(^|[^а-яёА-ЯЁ-])(' + f.text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + ')(?![а-яёА-ЯЁ-])', 'i'), m = re.exec(text);
+    let s, marks;
+    if (m) { const a = m.index + m[1].length, b = a + m[2].length; s = esc(text.slice(0, a)) + '{}' + esc(text.slice(b)); marks = [text.slice(a, b)]; }
+    else { s = '{}'; marks = [text]; }
+    const t2 = ch({ s, mode:'mark', marks, subs:[{ ask:'Какой падеж у выделенного слова?', opts:optAll(), ans:f.idx.map(i => CASES[ORDER[i]].abbr) }], hint:'Задай вопрос к выделенному слову от соседнего слова в предложении.' });
+    G.tasks[G.ti].hint = t2.hint;
+    renderChoice(t2, host, done);
+  };
+  $('#sentBtn').addEventListener('click', check);
+  $('#sentIn').addEventListener('keydown', e => { if (e.key === 'Enter') check(); });
+}
+
+
+
+/* ================= ТРЕНАЖЁР СКЛОНЕНИЯ (свои слова), для одного и для двух игроков ================= */
+const ANIM = new Set(('человек мальчик девочка мужчина женщина ребёнок малыш старик старушка учитель учительница ученик ученица школьник школьница студент врач доктор медсестра папа мама отец мать дедушка бабушка дед баба брат сестра сын дочь друг подруга дядя тётя внук внучка муж жена сосед соседка мастер повар лётчик водитель шофёр продавец строитель художник писатель поэт музыкант певец танцор артист солдат матрос моряк пират рыцарь король королева принц принцесса царь царевна богатырь волшебник фея ведьма герой гость хозяин пастух рыбак охотник пожарный полицейский директор начальник капитан '
+  + 'кот кошка котёнок собака щенок пёс лошадь конь жеребёнок корова телёнок бык свинья поросёнок овца баран ягнёнок коза козёл волк волчонок лиса лисёнок медведь медвежонок заяц зайчик ёж ёжик белка бельчонок мышь мышка крыса слон слонёнок тигр лев львёнок обезьяна жираф зебра верблюд олень лось крокодил бегемот носорог кролик хомяк енот барсук бобр лиса '
+  + 'птица птенец воробей ворона сорока синица голубь сова орёл утка утёнок гусь гусёнок курица цыплёнок петух лебедь журавль аист попугай соловей снегирь дятел рыба щука карась акула кит дельфин лягушка жаба змея ящерица черепаха жук бабочка пчела оса муха комар паук муравей улитка червяк гусеница дракон динозавр').split(/\s+/));
+const guessAnim = w => ANIM.has(w);
+const EXW = [['стол', 'м', false], ['книга', 'ж', false], ['окно', 'с', false], ['учитель', 'м', true], ['тетрадь', 'ж', false], ['море', 'с', false]];
+function renderOwnTrainer(task, host, done, onWrong, ctl) {
+  const S = { g:'м', an:false, manual:false, anManual:false };
+  const ex = [...WORDS.slice(0, 4).map(w => ({ title:w.title, forms:w.forms, g:w.g, an:w.an })), ...EXW.map(([n, g, an]) => ({ title:n, forms:nounForms(n, g, an), g, an }))].slice(0, 6);
+  host.innerHTML = `<div class="otr"><div class="panelbox otbox">
+    <label class="field">Впиши своё слово<input class="in o-noun" autocomplete="off" maxlength="30" placeholder="например: ручка"></label>
+    <div class="field">Род<div class="seg o-g">${[['м', '👦 он'], ['ж', '👧 она'], ['с', '🟦 оно']].map(([v, l]) => `<button class="chip" data-g="${v}" data-nosound="1">${l}</button>`).join('')}</div></div>
+    <div class="field">Отвечает на вопрос (кто? — люди и животные)<div class="seg o-a"><button class="chip" data-a="0" data-nosound="1">🪑 что?</button><button class="chip" data-a="1" data-nosound="1">🐶 кто?</button></div></div>
+    <label class="field">Прилагательное (можно не писать)<input class="in o-adj" autocomplete="off" maxlength="30" placeholder="например: красивая"></label>
+    <div class="field">Или возьми готовое слово<div class="seg o-ex">${ex.map((e, i) => `<button class="chip" data-w="${i}">${esc(e.title)}</button>`).join('')}</div></div>
+    <button class="btn go o-go" data-nosound="1">✨ СКЛОНЯТЬ</button><p class="msg o-msg"></p><div class="o-editbox"></div>
+  </div><div class="o-bar" hidden><span>Слово: <b class="o-title"></b></span><button class="chip o-change" data-nosound="1">✏️ Другое слово / исправить формы</button></div><div class="o-game"></div></div>`;
+  const q = s => host.querySelector(s);
+  q('.o-change').addEventListener('click', () => { q('.otbox').hidden = false; q('.o-bar').hidden = true; });
+  const syncSeg = () => { host.querySelectorAll('.o-g .chip').forEach(b => b.classList.toggle('on', b.dataset.g === S.g)); host.querySelectorAll('.o-a .chip').forEach(b => b.classList.toggle('on', (b.dataset.a === '1') === S.an)); };
+  syncSeg();
+  host.querySelectorAll('.o-g .chip').forEach(b => b.addEventListener('click', () => { S.g = b.dataset.g; S.manual = true; syncSeg(); }));
+  host.querySelectorAll('.o-a .chip').forEach(b => b.addEventListener('click', () => { S.an = b.dataset.a === '1'; S.anManual = true; syncSeg(); }));
+  q('.o-noun').addEventListener('input', e => { const w = e.target.value.trim().toLowerCase(); if (!S.manual) S.g = guessG(w); if (!S.anManual) S.an = guessAnim(w); syncSeg(); });
+  q('.o-noun').addEventListener('keydown', e => { if (e.key === 'Enter') gen(); });
+  q('.o-adj').addEventListener('keydown', e => { if (e.key === 'Enter') gen(); });
+  q('.o-go').addEventListener('click', gen);
+  host.querySelectorAll('.o-ex .chip').forEach(b => b.addEventListener('click', () => { const e = ex[+b.dataset.w]; if (e && e.forms) { S.g = e.g; S.an = e.an; syncSeg(); startGame(e.title, e.forms, false); } }));
+  function editor(title, forms, msg, open) {
+    q('.o-editbox').innerHTML = `<details class="o-edit" ${open ? 'open' : ''}><summary>✏️ Проверить и исправить формы слова «${esc(title)}»</summary>
+      ${msg ? `<p class="msg">${esc(msg)}</p>` : ''}${ORDER.map((c, i) => `<div class="frow"><span>${CASES[c].abbr}<small>${CASES[c].q}</small></span><input class="in o-form" data-i="${i}" value="${esc(forms[i])}" autocomplete="off"></div>`).join('')}
+      <div style="margin-top:10px"><button class="btn alt o-apply" data-nosound="1">🔄 ПРИМЕНИТЬ И ПЕРЕМЕШАТЬ</button></div></details>`;
+    q('.o-apply').addEventListener('click', () => {
+      const ins = [...host.querySelectorAll('.o-form')].map(i => i.value.trim().toLowerCase().replace(/\s+/g, ' '));
+      if (ins.some(x => !x)) { q('.o-msg').textContent = 'Заполни все шесть форм.'; return; }
+      q('.o-msg').textContent = ''; startGame(title, ins, true);
+    });
+  }
+  function gen() {
+    const noun = q('.o-noun').value.trim().toLowerCase(), adj = q('.o-adj').value.trim().toLowerCase(), msg = q('.o-msg'); msg.textContent = '';
+    if (!/^[а-яё-]+$/.test(noun)) { msg.textContent = 'Напиши слово русскими буквами.'; return; }
+    if (adj && !/^[а-яё-]+$/.test(adj)) { msg.textContent = 'Прилагательное нужно написать русскими буквами.'; return; }
+    let forms = nounForms(noun, S.g, S.an), warn = '', manual = !forms; if (!forms) { forms = Array(6).fill(noun); warn = 'Это слово особенное — впиши формы сам и нажми «Применить». '; }
+    if (adj) { const a = adjForms(adj, S.an); if (a) forms = forms.map((f, i) => a[i] + ' ' + f); else warn += 'Прилагательное не узнал — допиши его в формы сам. '; }
+    const title = adj ? adj + ' ' + noun : noun;
+    const ask = S.g === 'м' && !S.anManual && !guessAnim(noun) ? 'Проверь: слово отвечает на «кто?» или «что?» — от этого зависит В.п. Если нужно, нажми «Другое слово» и выбери вопрос.' : '';
+    editor(title, forms, warn, !!warn);
+    if (!manual) startGame(title, forms, true, ask);
+  }
+  function startGame(title, forms, save, note) {
+    if (save) { WORDS = WORDS.filter(w => w.title !== title); WORDS.unshift({ title, forms:forms.slice(), g:S.g, an:S.an }); WORDS = WORDS.slice(0, 12); saveW(); }
+    const t = declineSort(title, forms, 'Задай вопрос к каждой форме. Помощники: есть, нет, дать, вижу, горжусь, думаю.'), gh = q('.o-game');
+    gh.innerHTML = ''; renderSort(t, gh, (el, msg) => done(el, msg), onWrong, ctl);
+    q('.otbox').hidden = true; q('.o-title').textContent = title; q('.o-bar').hidden = false;
+    let nt = q('.o-note'); if (!nt) { nt = document.createElement('span'); nt.className = 'o-note msg'; q('.o-bar').appendChild(nt); } nt.textContent = note || '';
+    if (ctl && ctl.start) ctl.start();
+    if (!ctl && gh.scrollIntoView) gh.scrollIntoView({ behavior:reduce() ? 'auto' : 'smooth', block:'start' });
+  }
+}
+
+/* ================= СНЕЖНЫЙ БОЙ: два игрока одновременно ================= */
+const D = { useEmo:[false, false], names:['Снежная фея', 'Снеговик'], emo:['🧚‍♀️', '⛄'], av:[null, null], maxLives:5, total:10, level:'1', stage:0, ownRounds:3, tour:1, wins:[0, 0], layout:'side', P:[null, null], over:false, firstDone:-1 };
+const EMOS = [['🧚‍♀️', '👸', '❄️', '🦄', '🧝‍♀️'], ['⛄', '🐧', '🐻‍❄️', '🦌', '🐺']];
+const avHTML = i => D.av[i] ? `<img class="avimg" src="${D.av[i]}" alt="">` : (TH.h[i] && !D.useEmo[i]) ? `<img class="himg av" src="${TH.h[i]}" alt="">` : `<span class="avemo">${D.emo[i]}</span>`;
+const heartsStr = (i, p) => '❤️'.repeat(Math.max(0, p.lives)) + '🖤'.repeat(Math.max(0, D.maxLives - p.lives));
+const segBtn = (act, v, label, on) => `<button class="chip ${on ? 'on' : ''}" data-act="${act}" data-v="${v}">${label}</button>`;
+function duelSetup(keep) {
+  resetFx(); if (!keep) window.scrollTo(0, 0);
+  const team = i => `<div class="panelbox tsetup"><h3 style="margin:0">Игрок ${i + 1}</h3>
+    <div class="avprev">${avHTML(i)}</div>
+    <label class="field">Имя или команда<input class="in dname" data-i="${i}" value="${esc(D.names[i])}" maxlength="20" autocomplete="off"></label>
+    <div class="field">Герой<div class="emos">${EMOS[i].map(e => `<button class="chip ${!D.av[i] && (!TH.h[i] || D.useEmo[i]) && D.emo[i] === e ? 'on' : ''}" data-act="demo" data-i="${i}" data-e="${e}" data-nosound="1">${e}</button>`).join('')}</div></div>
+    <div class="field">Или своя картинка<div class="seg"><button class="chip" data-act="dpic" data-i="${i}">🖼️ Загрузить</button>${D.av[i] ? `<button class="chip" data-act="dnopic" data-i="${i}">✖ Убрать</button>` : ''}</div></div>
+    <input type="file" accept="image/*,.jfif,.jpg,.jpeg,.png,.webp" id="file${i}" data-i="${i}" hidden></div>`;
+  $('#screen').innerHTML = `<section class="setup">
+    <div class="lvhead" style="--c:var(--l1)"><span class="em">⚔️</span><div><h1>СНЕЖНЫЙ БОЙ</h1><p class="sub" style="margin:0;color:var(--ink)">Соревнование для двоих: у каждого своя половина экрана, свой вопрос и свои ответы.</p></div></div>
+    <div class="intro"><h3>Как считаются баллы</h3>
+      <div>📚 Задания идут по порядку: сначала этап 1, потом этап 2 и так далее.</div>
+      <div>🧩 «Склонение своих слов»: каждый вписывает своё слово в своей панели и расставляет его формы по падежам.</div>
+      <div>⭐ Верный ответ: <b>10 очков</b> + бонус за скорость (до +5) + бонус за серию (3 подряд +2, 5 подряд +4). Ещё вы собираете снежок ⚪</div>
+      <div>❌ Ошибка: 0 очков, серия обрывается. Если у соперника есть снежок, он попадает в вас: −1 ❤️</div>
+      <div>🏁 Кто первым ответил на все вопросы, получает <b>+5 очков</b>.</div>
+      <div>💥 Закончились жизни — вылет, побеждает соперник.</div>
+      <div>🏆 Иначе побеждает тот, у кого больше очков (при равенстве — жизни, потом снежки).</div></div>
+    ${team(0)}${team(1)}
+    <div class="panelbox"><div class="field">Уровень (задания идут по порядку этапов, с первого)
+      <div class="seg">${[['1', '1'], ['2', '2'], ['3', '3'], ['4', '4'], ['5', '5'], ['all', 'Все по порядку'], ['own', '🧩 Склонение своих слов']].map(([v, l]) => segBtn('dlevel', v, l, D.level === v)).join('')}</div></div>
+      ${D.level !== 'all' && D.level !== 'own' ? `<div class="field">Этап<div class="seg">${segBtn('dstage', 0, 'Все этапы подряд', !D.stage)}${LV[+D.level - 1].stages.map((st, k) => segBtn('dstage', k + 1, `${k + 1}. ${st.t}`, D.stage === k + 1)).join('')}</div></div>` : ''}
+      ${D.level === 'own' ? `<div class="field">Слов у каждого игрока (каждый вписывает своё слово)<div class="seg">${[2, 3, 5].map(v => segBtn('downd', v, v, D.ownRounds === v)).join('')}</div></div>` : `<div class="field">Заданий в туре (у обоих одинаковые, внутри этапа порядок разный)<div class="seg">${[6, 10, 14, 0].map(v => segBtn('drounds', v, v || 'Все', D.total === v)).join('')}</div></div>`}
+      <div class="field">Жизней у каждого<div class="seg">${[3, 5, 7].map(v => segBtn('dlives', v, '❤️ ' + v, D.maxLives === v)).join('')}</div></div>
+      <div class="field">Расположение игроков<div class="seg">${segBtn('dlayout', 'side', '↔ Рядом', D.layout === 'side')}${segBtn('dlayout', 'face', '🔁 Друг напротив друга (верхний перевёрнут)', D.layout === 'face')}</div></div></div>
+    <button class="btn go" data-act="dgo">▶️ НАЧАТЬ БОЙ</button>
+    <button class="reset" data-act="map">← На карту</button></section>`;
+}
+function duelPool() {
+  if (D.level === 'own') return Array.from({ length:D.ownRounds }, (_, n) => ({ type:'own', prompt:`ТРЕНАЖЁР СКЛОНЕНИЯ · слово ${n + 1}`, _lv:7, _st:0, _sn:'СКЛОНЯЙ СВОЁ СЛОВО' }));
+  const lv = D.level === 'all' ? [1, 2, 3, 4, 5] : [+D.level]; const arr = [];
+  lv.forEach(l => LV[l - 1].stages.forEach((st, k) => {
+    if (!st.make || (D.level !== 'all' && D.stage && D.stage - 1 !== k)) return;
+    st.make().forEach(t => { if (t.type === 'choice' || t.type === 'sort') { t._lv = l; t._st = k; t._sn = st.t; arr.push(t); } });
+  }));
+  return D.total > 0 ? arr.slice(0, D.total) : arr;
+}
+const duelOrder = pool => { const g = {}; pool.forEach(t => { const k = t._lv * 100 + t._st; (g[k] = g[k] || []).push(t); }); return Object.keys(g).map(Number).sort((x, y) => x - y).flatMap(k => shuffle(g[k])); };
+const panelHTML = i => `<div class="pl pl${i}" id="pl${i}">
+  <div class="phead">${avHTML(i)}<div class="pinfo"><div class="tname">${esc(D.names[i])}</div><div class="hearts" id="hr${i}"></div><div class="ammo" id="am${i}"></div></div><div class="pts" id="pt${i}">⭐ 0</div></div>
+  <div class="pq" id="pq${i}"></div><div class="pbody" id="pb${i}"></div><div class="pfb" id="fb${i}"></div></div>`;
+function duelStart() {
+  resetFx(); G.duel = true; D.over = false; D.firstDone = -1; window.scrollTo(0, 0);
+  const pool = duelPool();
+  D.P = [0, 1].map(() => { const p = { qs:duelOrder(pool), qi:0, pts:0, streak:0, best:0, lives:D.maxLives, ammo:0, ok:0, bad:0, done:false, out:false, tq:0, ctl:{ locked:false, m:0 } }; p.ctl.start = () => { p.tq = performance.now(); }; return p; });
+  $('#screen').innerHTML = `<section class="duelwrap"><div class="arena ${D.layout}">${panelHTML(0)}<div class="scorebar" id="scorebar"></div>${panelHTML(1)}</div>
+    <button class="reset" data-act="dsetup">⚙️ Настройки / выйти из боя</button></section>`;
+  updateHud(0); updateHud(1); showQ(0); showQ(1);
+}
+function updateHud(i) {
+  const p = D.P[i]; $('#hr' + i).textContent = heartsStr(i, p);
+  $('#am' + i).textContent = `${'⚪'.repeat(Math.min(p.ammo, 5))}${p.ammo > 5 ? '+' : ''} снежков: ${p.ammo}`;
+  $('#pt' + i).textContent = '⭐ ' + p.pts;
+  const cu = p.qs[Math.min(p.qi, p.qs.length - 1)];
+  $('#pq' + i).textContent = p.done ? 'Все задания пройдены' : cu._lv === 7 ? `🧩 Склонение своих слов · слово ${p.qi + 1} из ${p.qs.length}` : `Ур. ${cu._lv} · этап ${cu._st + 1}: ${cu._sn} · задание ${p.qi + 1} из ${p.qs.length}`;
+  const [a, b] = D.P, lead = a.pts === b.pts ? -1 : a.pts > b.pts ? 0 : 1;
+  $('#scorebar').innerHTML = `<span class="sb ${lead === 0 ? 'lead' : ''}">${lead === 0 ? '🥇 ' : ''}${esc(D.names[0])} <b>${a.pts}</b></span><span class="sbv">:</span><span class="sb ${lead === 1 ? 'lead' : ''}"><b>${b.pts}</b> ${esc(D.names[1])}${lead === 1 ? ' 🥇' : ''}</span>`;
+}
+function fb(i, text, kind) { const e = $('#fb' + i); if (!e) return; e.className = 'pfb ' + (kind || ''); e.textContent = text; e.classList.remove('flash'); void e.offsetWidth; e.classList.add('flash'); }
+function showQ(i) {
+  const p = D.P[i]; if (D.over || !G.duel) return;
+  if (p.qi >= p.qs.length) { duelFinish(i); return; }
+  const t = p.qs[p.qi], host = $('#pb' + i); p.ctl.locked = false; p.ctl.m = 0; p.tq = performance.now(); updateHud(i);
+  host.innerHTML = `<h3 class="pprompt">${t.prompt}</h3><div class="pcontent"></div>`;
+  const box = host.querySelector('.pcontent');
+  if (t.type === 'sort') renderSort(t, box, () => duelRight(i), () => duelMiss(i, () => { p.ctl.locked = false; }), p.ctl);
+  else if (t.type === 'own') renderOwnTrainer(t, box, () => duelRight(i), () => duelMiss(i, () => { p.ctl.locked = false; }), p.ctl);
+  else renderChoice(t, box, () => duelRight(i), (btn, sub) => duelWrong(i, btn, sub), p.ctl);
+}
+function duelRight(i) {
+  const p = D.P[i]; if (D.over || !G.duel) return; p.ctl.locked = true;
+  const t = p.qs[p.qi], sort = t.type !== 'choice', sec = (performance.now() - p.tq) / 1000, lim = sort ? [15, 30, 50] : [4, 8, 12];
+  const clean = p.ctl.m === 0, speed = !clean ? 0 : sec <= lim[0] ? 5 : sec <= lim[1] ? 3 : sec <= lim[2] ? 1 : 0;
+  if (clean) { p.streak++; p.best = Math.max(p.best, p.streak); }
+  const sb = p.streak >= 5 ? 4 : p.streak >= 3 ? 2 : 0, base = clean ? 10 : Math.max(4, 10 - 2 * p.ctl.m), gain = base + speed + sb;
+  p.pts += gain; p.ammo++; p.ok++; updateHud(i);
+  const pt = $('#pt' + i); pt.classList.remove('pop'); void pt.offsetWidth; pt.classList.add('pop');
+  fb(i, `🎉 +${gain}${speed ? ` ⚡${speed}` : ''}${sb ? ` 🔥${sb}` : ''} · снежок ⚪`, 'good');
+  Snd.playCorrect(); const r = $('#pl' + i).getBoundingClientRect(); sparkle(r.left + r.width / 2, r.top + 90, 6);
+  later(() => { p.qi++; showQ(i); }, 1400);
+}
+function throwBall(from, to, cb) {
+  Snd.playThrow();
+  if (!canAnim) { later(cb, 300); return; }
+  const a = $('#pl' + from).getBoundingClientRect(), b = $('#pl' + to).getBoundingClientRect();
+  const x0 = a.left + a.width / 2, y0 = a.top + Math.min(90, a.height / 2), dx = b.left + b.width / 2 - x0, dy = b.top + Math.min(90, b.height / 2) - y0;
+  const s = document.createElement('div'); s.className = 'fx'; s.textContent = '⚪'; s.style.left = (x0 - 17) + 'px'; s.style.top = (y0 - 17) + 'px'; s.style.fontSize = '40px'; document.body.appendChild(s);
+  s.animate([{ transform:'translate(0,0) scale(.8)' }, { transform:`translate(${dx / 2}px,${dy / 2 - 60}px) scale(1.4) rotate(180deg)`, offset:.5 }, { transform:`translate(${dx}px,${dy}px) scale(1) rotate(360deg)` }],
+    { duration:750, easing:'ease-in-out', fill:'forwards' }).onfinish = () => { s.remove(); if (G.duel) cb(); };
+}
+function duelMiss(i, resume) {
+  const p = D.P[i], o = D.P[1 - i]; if (D.over || !G.duel) return;
+  p.ctl.locked = true; p.streak = 0; p.bad++; p.ctl.m++; Snd.playWrong();
+  if (o.ammo > 0) {
+    o.ammo--; updateHud(1 - i); fb(i, '❌ Ошибка! Соперник бросает снежок…', 'bad');
+    throwBall(1 - i, i, () => {
+      p.lives--; Snd.playHit(); updateHud(i);
+      const pl = $('#pl' + i); if (pl) { pl.classList.add('hit'); setTimeout(() => pl.classList.remove('hit'), 700); }
+      fb(i, '💥 Попали! −1 ❤️', 'bad');
+      if (p.lives <= 0) { p.out = true; $('#pb' + i).innerHTML = '<p class="sub" style="text-align:center;font-size:1.5rem">💥 Жизни закончились</p>'; duelCheckEnd(); }
+      else later(resume, 1400);
+    });
+  } else { fb(i, '❌ Ошибка! У соперника нет снежков — мимо', 'bad'); later(resume, 1800); }
+}
+function duelWrong(i, btn, sub) {
+  const p = D.P[i]; if (D.over || !G.duel) return; p.ctl.locked = true;
+  btn.classList.add('no'); btn.disabled = true;
+  const all = [...$('#pb' + i).querySelectorAll('.opt')]; all.forEach(b => { b.disabled = true; });
+  const ans = Array.isArray(sub.ans) ? sub.ans : [sub.ans], k = sub.opts.findIndex(x => ans.includes(x.text)); if (all[k]) all[k].classList.add('ok');
+  duelMiss(i, () => { if (!p.out) { p.qi++; showQ(i); } });
+}
+function duelFinish(i) {
+  const p = D.P[i]; p.done = true; let msg = 'Все вопросы пройдены! Ждём соперника…';
+  if (D.firstDone < 0) { D.firstDone = i; p.pts += 5; msg = '🏁 Финиш первым! +5 очков. Ждём соперника…'; Snd.playStageComplete(); }
+  updateHud(i); $('#pb' + i).innerHTML = `<p class="sub" style="text-align:center;font-size:1.5rem;color:var(--ink)">${msg}</p>`; duelCheckEnd();
+}
+function duelCheckEnd() {
+  if (D.over) return; const [a, b] = D.P;
+  if (a.out || b.out) { D.over = true; later(() => duelEnd('Закончились жизни — вылет'), 1600); }
+  else if (a.done && b.done) { D.over = true; later(() => duelEnd('Все вопросы пройдены'), 1000); }
+}
+function duelEnd(reason) {
+  clearTimers(); G.duel = false; D.over = true;
+  const [a, b] = D.P; let w = -1;
+  if (a.out !== b.out) w = a.out ? 1 : 0; else if (a.pts !== b.pts) w = a.pts > b.pts ? 0 : 1; else if (a.lives !== b.lives) w = a.lives > b.lives ? 0 : 1; else if (a.ammo !== b.ammo) w = a.ammo > b.ammo ? 0 : 1;
+  if (w >= 0) { D.wins[w]++; Snd.playFinalVictory(); confetti(160); starBurst(20); } else Snd.playStageComplete();
+  const col = i => { const p = D.P[i], place = w < 0 ? '🤝' : (w === i ? '🥇' : '🥈');
+    return `<div class="team ${w === i ? 'on' : ''}"><div style="font-size:2rem">${place}</div>${avHTML(i)}<div class="tname">${esc(D.names[i])}</div><div class="pts" style="margin:6px auto;display:inline-block">⭐ ${p.pts}</div>
+      <div class="rt">Верных: <b>${p.ok}</b> из ${p.qs.length}</div><div class="rt">Лучшая серия: <b>${p.best}</b></div><div class="rt">Жизни: ${heartsStr(i, p)}</div><div class="rt">Снежков: <b>${p.ammo}</b></div></div>`; };
+  $('#screen').innerHTML = `<section class="result">
+    <h1 class="zoom">${w >= 0 ? `🏆 ТУР ${D.tour}: ПОБЕДИЛ(А) «${esc(D.names[w])}»!` : `🤝 ТУР ${D.tour}: НИЧЬЯ!`}</h1><p class="sub">${esc(reason || '')}</p>
+    <div class="teams" style="margin:14px 0">${col(0)}<div class="vs">VS</div>${col(1)}</div>
+    <p class="sub" style="color:var(--ink)">Побед в бою: <b>${esc(D.names[0])} — ${D.wins[0]}</b> · <b>${esc(D.names[1])} — ${D.wins[1]}</b></p>
+    <div class="actions" style="margin-top:14px"><button class="btn go" data-act="dnext">➡️ СЛЕДУЮЩИЙ ТУР</button><button class="btn alt" data-act="dsetup">⚙️ НАСТРОЙКИ</button><button class="btn alt" data-act="map">🏠 В МЕНЮ</button></div></section>`;
+}
+
+/* ================= КЛИКИ ПО ЭКРАНУ ================= */
+let resetArmed = 0;
+$('#screen').addEventListener('click', e => {
+  const el = e.target.closest('[data-act]'); if (!el) return;
+  const act = el.dataset.act, i = +el.dataset.i, k = +el.dataset.k;
+  if (act === 'level') showLevel(i);
+  else if (act === 'stage') startStage(i, k);
+  else if (act === 'marathon') startMarathon();
+  else if (act === 'map') showMap();
+  else if (act === 'back') { if (G.marathon) showMap(); else if (G.own) ownWord(G.own.i); else showLevel(G.lv); }
+  else if (act === 'hint') {
+    const t = G.tasks[G.ti]; if (!t) return; Snd.playHint();
+    const b = $('#hintBox'); b.hidden = false; b.textContent = '💡 ' + (t.hint || SPECHINT);
+  }
+  else if (act === 'og') { OS.g = el.dataset.g; OS.manual = true; syncSeg(); }
+  else if (act === 'oa') { OS.an = el.dataset.a === '1'; OS.anManual = true; syncSeg(); }
+  else if (act === 'mkforms') mkForms();
+  else if (act === 'osave') saveWord();
+  else if (act === 'oword') ownWord(i);
+  else if (act === 'ostart') startOwn(i, k);
+  else if (act === 'odel') { WORDS.splice(i, 1); saveW(); ownHome(); }
+  else if (act === 'theme') themeScreen();
+  else if (act === 'tpick') { thPick = el.dataset.k; const f = $('#tfile'); if (f) f.click(); }
+  else if (act === 'tclear') { if (el.dataset.k === 'bg') TH.bg = null; else TH.h[+el.dataset.k] = null; saveTH(); applyTheme(); themeScreen(); }
+  else if (act === 'duel') { D.tour = 1; D.wins = [0, 0]; duelSetup(); }
+  else if (act === 'demo') { D.emo[i] = el.dataset.e; D.av[i] = null; D.useEmo[i] = true; duelSetup(true); }
+  else if (act === 'dpic') { const f = $('#file' + i); if (f) f.click(); }
+  else if (act === 'dnopic') { D.av[i] = null; D.useEmo[i] = false; duelSetup(true); }
+  else if (act === 'drounds') { D.total = +el.dataset.v; duelSetup(true); }
+  else if (act === 'downd') { D.ownRounds = +el.dataset.v; duelSetup(true); }
+  else if (act === 'dlevel') { D.level = el.dataset.v; D.stage = 0; duelSetup(true); }
+  else if (act === 'dstage') { D.stage = +el.dataset.v; duelSetup(true); }
+  else if (act === 'dlayout') { D.layout = el.dataset.v; duelSetup(true); }
+  else if (act === 'dlives') { D.maxLives = +el.dataset.v; duelSetup(true); }
+  else if (act === 'dgo') { D.tour = 1; D.wins = [0, 0]; duelStart(); }
+  else if (act === 'dnext') { D.tour++; duelStart(); }
+  else if (act === 'dsetup') duelSetup();
+  else if (act === 'reset') {
+    if (!resetArmed) { resetArmed = 1; el.textContent = 'Нажми ещё раз, чтобы сбросить звёзды и прогресс'; setTimeout(() => { resetArmed = 0; const b = $('#resetBtn'); if (b) b.textContent = 'Сбросить прогресс'; }, 4000); }
+    else { resetArmed = 0; P = { stars:0, done:{}, marathon:0 }; saveP(); updateStars(); showMap(); }
+  }
+});
+$('#screen').addEventListener('input', e => { const t = e.target; if (t.classList && t.classList.contains('dname')) D.names[+t.dataset.i] = t.value.slice(0, 20) || ('Команда ' + (+t.dataset.i + 1)); });
+$('#screen').addEventListener('change', e => {
+  const t = e.target; if (t && t.id === 'tfile') { themePicked(t); return; }
+  if (!(t && t.type === 'file') || !t.files || !t.files[0]) return;
+  const f = t.files[0]; if (!(/^image\//.test(f.type) || /\.(jpe?g|jfif|png|webp|gif|avif|bmp)$/i.test(f.name))) return;
+  const i = +t.dataset.i; if (D.av[i] && D.av[i].startsWith('blob:')) { try { URL.revokeObjectURL(D.av[i]); } catch (err) {} }
+  D.av[i] = URL.createObjectURL(f); duelSetup(true);
+});
+$('#homeBtn').addEventListener('click', showMap);
+(function snow() { const sn = $('#snow'); for (let i = 0; i < 22; i++) { const f = document.createElement('i'); f.textContent = ['❄', '❅', '❆'][i % 3]; f.style.left = (Math.random() * 100) + 'vw'; f.style.fontSize = (12 + Math.random() * 18) + 'px'; f.style.animationDuration = (10 + Math.random() * 12) + 's'; f.style.animationDelay = (-Math.random() * 22) + 's'; f.style.setProperty('--dx', (Math.random() * 80 - 40) + 'px'); sn.appendChild(f); } })();
+
+/* Двое играют одновременно: при двух пальцах браузер не присылает click, поэтому по каждому касанию вызываем click сами */
+(function multiTouch() {
+  const down = new Map(), recent = [], sel = 'button, .opt, .slot';
+  document.addEventListener('pointerdown', e => {
+    if (e.pointerType === 'mouse') return;
+    const b = e.target.closest && e.target.closest(sel); if (b && !b.disabled) down.set(e.pointerId, { b, x:e.clientX, y:e.clientY });
+  }, true);
+  document.addEventListener('pointercancel', e => down.delete(e.pointerId), true);
+  document.addEventListener('pointerup', e => {
+    const r = down.get(e.pointerId); if (!r) return; down.delete(e.pointerId);
+    if (Math.hypot(e.clientX - r.x, e.clientY - r.y) > 16 || !document.contains(r.b) || r.b.disabled) return;
+    recent.push({ t:performance.now(), x:e.clientX, y:e.clientY }); if (recent.length > 8) recent.shift();
+    r.b.click();
+  }, true);
+  document.addEventListener('click', e => {      // настоящий click, который браузер пришлёт следом, гасим: мы уже обработали касание
+    if (!e.isTrusted) return; const now = performance.now();
+    if (recent.some(s => now - s.t < 700 && Math.hypot(e.clientX - s.x, e.clientY - s.y) < 40)) { e.stopImmediatePropagation(); e.preventDefault(); }
+  }, true);
+})();
+applyTheme(); updateStars(); updateStreak(); showMap();
+window.PQ = { D, duelSetup, duelStart, LV, G, P, startStage, startMarathon, showMap, showLevel, nounForms, adjForms, phraseRaw, withPrep, findForm, startOwn };
+})();
+</script>
+</body>
+</html>
